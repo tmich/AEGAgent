@@ -1,14 +1,16 @@
 package it.aeg2000srl.aegagent.core;
 
 /**
- * Created by Paolo on 24/09/2015.
+ * Created by tiziano.michelessi on 24/09/2015.
  */
 public class Customer {
     protected long id;
+    protected String code;
     protected String name;
     protected String address;
     protected String cap;
     protected String city;
+    protected String prov;
     protected String telephone;
     protected String vatNumber;
 
@@ -67,4 +69,12 @@ public class Customer {
     public void setVatNumber(String vatNumber) {
         this.vatNumber = vatNumber;
     }
+
+    public String getCode() { return code; }
+
+    public void setCode(String code) { this.code = code; }
+
+    public String getProv() { return prov; }
+
+    public void setProv(String prov) { this.prov = prov; }
 }

@@ -5,8 +5,9 @@ package it.aeg2000srl.aegagent.core;
  */
 public interface IRepository<T> {
     T getById(long id);
-    void add(T t);
+    long add(T t);
     void edit(T t);
     void remove(T t);
     Iterable<T> getAll();
+    long size();
 }
