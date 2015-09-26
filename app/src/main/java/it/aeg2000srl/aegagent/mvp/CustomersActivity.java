@@ -1,17 +1,24 @@
 package it.aeg2000srl.aegagent.mvp;
 
+import android.content.ContentValues;
+import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.Map;
+import java.util.List;
 
 import it.aeg2000srl.aegagent.R;
-import it.aeg2000srl.aegagent.core.Customer;
 
 public class CustomersActivity extends AppCompatActivity implements ICustomersView {
 
@@ -19,14 +26,21 @@ public class CustomersActivity extends AppCompatActivity implements ICustomersVi
     ListView customersList;
 
     // Presenter
-    CustomerPresenter presenter;
+    CustomersPresenter presenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_customers);
         customersList = (ListView)findViewById(R.id.customersList);
-        presenter = new CustomerPresenter(this);
+        presenter = new CustomersPresenter(this);
+
+        customersList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                presenter.onItemClick(i);
+            }
+        } );
     }
 
     @Override
@@ -52,8 +66,52 @@ public class CustomersActivity extends AppCompatActivity implements ICustomersVi
     }
 
     @Override
-    public void setItems(ArrayList<String> items) {
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items);
+    public void setItems(ArrayList<ContentValues> items) {
+        //ArrayAdapter<ContentValues> adapter = new ArrayAdapter<ContentValues>(this, android.R.layout.simple_list_item_2, items);
+        ArrayAdapter<ContentValues> adapter = new ArrayAdapter<ContentValues>(this, android.R.layout.simple_list_item_1, items);
         customersList.setAdapter(adapter);
     }
+
+    @Override
+    public Context getContext() {
+        return this;
+    }
+
+
+    /*
+    static class ViewHolder {
+        TextView id;
+        TextView name;
+        ImageView icon;
+        int position;
+
+        public setName()
+    }
+
+    private class CustomerAdapter extends ArrayAdapter<ContentValues> {
+        public CustomerAdapter(List<ContentValues> data) {
+            super(CustomersActivity.this, R.layout.cust_row, data);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            ViewHolder holder = null;
+            LayoutInflater inflater = getLayoutInflater();
+
+            if (convertView == null) {
+                convertView = inflater.inflate(R.layout.cust_row, null, false);
+                holder = new ViewHolder();
+            }
+            else {
+                holder = (ViewHolder) convertView.getTag();
+            }
+
+            holder.id = (TextView) convertView.findViewById(R.id.cid);
+            holder.name = (TextView) convertView.findViewById(R.id.cname);
+            convertView.setTag(holder);
+
+            return convertView;
+        }
+    } */
+
 }

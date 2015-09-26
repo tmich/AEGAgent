@@ -9,11 +9,16 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name=".mvp.CustomersActivity"
-            android:label="@string/title_activity_customers">
+            android:label="@string/title_activity_customers" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".mvp.CustomerDetailsActivity"
+            android:label="@string/title_activity_customer_details" >
         </activity>
     </application>
 
