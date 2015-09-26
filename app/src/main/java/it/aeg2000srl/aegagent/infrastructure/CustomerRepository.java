@@ -4,6 +4,7 @@ package it.aeg2000srl.aegagent.infrastructure;
  * Created by Tiziano on 24/09/2015.
  */
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteException;
@@ -18,6 +19,10 @@ public class CustomerRepository implements ICustomerRepository {
 
     public CustomerRepository(DbHelper db) {
         _db = db;
+    }
+
+    public CustomerRepository(Context context) {
+        _db = new DbHelper(context);
     }
 
     protected ContentValues toRaw(Customer cust) {
