@@ -19,7 +19,7 @@ public class CustomerServiceTest extends AndroidTestCase {
     protected void setUp() {
         dbh = new DbHelper(getContext());
         repo = new CustomerRepository(dbh);
-        serv = new CustomerService(repo);
+        serv = new CustomerService(getContext(), repo);
     }
 
     public void testCustomerServiceSizeShouldBeMoreThanZero() {
