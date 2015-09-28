@@ -131,7 +131,7 @@ public class CustomerRepository implements ICustomerRepository {
 
     @Override
     public ArrayList<Customer> getAll() {
-        ArrayList<Customer> customers = null;
+        ArrayList<Customer> customers = new ArrayList<>();
 
         try {
             Cursor crs = _db.getReadableDatabase().query(
@@ -161,7 +161,7 @@ public class CustomerRepository implements ICustomerRepository {
 
     @Override
     public ArrayList<Customer> findByName(String name) {
-        ArrayList<Customer> customers = null;
+        ArrayList<Customer> customers = new ArrayList<>();
 
         try {
             Cursor crs = _db.getReadableDatabase().query(

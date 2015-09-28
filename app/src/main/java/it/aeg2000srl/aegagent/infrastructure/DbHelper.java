@@ -7,6 +7,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 import android.util.Log;
 
+import it.aeg2000srl.aegagent.core.Customer;
+
 /**
  * Created by tiziano.michelessi on 25/09/2015.
  */
@@ -29,8 +31,8 @@ public class DbHelper extends SQLiteOpenHelper {
         public static final String COL_TEL = "tel";
         public static final String COL_IVA = "iva";
 
-        public static final String[] _COL_NAMES = {CustomersTable._ID, CustomersTable.COL_CODE, CustomersTable.COL_NAME, CustomersTable.COL_ADDRESS,
-                CustomersTable.COL_CAP, CustomersTable.COL_CITY, CustomersTable.COL_PROV, CustomersTable.COL_TEL, CustomersTable.COL_IVA};
+        public static final String[] _COL_NAMES = {_ID, COL_CODE, COL_NAME, COL_ADDRESS,
+                COL_CAP, COL_CITY, COL_PROV, COL_TEL, COL_IVA};
 
         public static final String _CREATE = String.format("CREATE TABLE %s (%s INTEGER PRIMARY KEY, %s TEXT, %s TEXT, %s TEXT, %s TEXT, %s TEXT, %s TEXT, %s TEXT, %s TEXT);",
                 TABLENAME, _ID, COL_CODE, COL_NAME, COL_ADDRESS, COL_CAP, COL_CITY, COL_PROV, COL_TEL, COL_IVA);
@@ -38,6 +40,20 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     /** END - customers table **/
+
+    /** products table **/
+    public static class ProductsTable implements BaseColumns {
+        public static final String TABLENAME = "products";
+
+        public static final String COL_CODE = "code";
+        public static final String COL_NAME = "name";
+        public static final String COL_PRICE = "price";
+
+        public static final String[] _COL_NAMES = {_ID, COL_CODE, COL_NAME, COL_PRICE};
+        public static final String _CREATE = String.format("CREATE TABLE %s (%s INTEGER PRIMARY KEY, %s TEXT, %s TEXT, %s DOUBLE);",
+                TABLENAME, _ID, COL_CODE, COL_NAME, COL_PRICE);
+        public static final String _DROP = String.format("DROP TABLE IF EXISTS %s;", TABLENAME);
+    }
 
     public DbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -47,6 +63,8 @@ public class DbHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         // tables creation
         db.execSQL(CustomersTable._CREATE);
+        db.execSQL(ProductsTable._CREATE);
+
         Log.d(CustomersTable.TABLENAME, CustomersTable._CREATE);
     }
 
@@ -54,6 +72,8 @@ public class DbHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // tables deletion
         db.execSQL(CustomersTable._DROP);
+        db.execSQL(ProductsTable._DROP);
+
         onCreate(db);
     }
 
