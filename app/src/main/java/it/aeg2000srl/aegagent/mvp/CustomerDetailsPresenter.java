@@ -1,6 +1,7 @@
 package it.aeg2000srl.aegagent.mvp;
 
 import android.content.ContentValues;
+import android.content.Intent;
 
 import java.util.ArrayList;
 
@@ -32,5 +33,13 @@ public class CustomerDetailsPresenter {
         cv.put("city", _cust.getCity());
 
         view.setItem(cv);
+    }
+
+    public void onNewOrder(long customer_id) {
+        Intent newOrderIntent = new Intent(_view.getContext(), OrderDetailsActivity.class);
+        newOrderIntent.putExtra("customer_id", customer_id);
+        newOrderIntent.putExtra("order_id", 0L);
+        _view.getContext().startActivity(newOrderIntent);
+
     }
 }

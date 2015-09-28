@@ -1,9 +1,16 @@
 package it.aeg2000srl.aegagent.mvp;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.util.Log;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import it.aeg2000srl.aegagent.core.Customer;
 import it.aeg2000srl.aegagent.services.CustomerService;
 
@@ -18,32 +25,33 @@ public class CustomersPresenter {
     //service
     CustomerService _srv;
 
-    //items
-    ArrayList<ContentValues> _customers;
+    // adapter
+    CustomersArrayAdapter adapter;
 
     public CustomersPresenter(ICustomersView view) {
         _view = view;
         _srv = new CustomerService(_view.getContext());
-        _customers = new ArrayList<>();
+        adapter = new CustomersArrayAdapter((Activity)_view, (List<Customer>) _srv.getAll());
+        _view.setAdapter(adapter);
 
-        for (Customer c : _srv.getAll()) {
-            ContentValues cv = new ContentValues();
-            cv.put("id", c.getId());
-            cv.put("name", c.getName());
-            _customers.add(cv);
-        }
-
-        view.setItems(_customers);
+        _view.update();
     }
 
     public void onItemClick(int position) {
-        ContentValues item = _customers.get(position);
+        Customer item = adapter.getItem(position);
         //String name = item.getAsString("name");
-        long id = item.getAsLong("id");
+        //long id = item.getAsLong("id");
         //Log.d("tiziano", name);
         Intent detailsView = new Intent(_view.getContext(), CustomerDetailsActivity.class);
-        detailsView.putExtra("id", id);
+        detailsView.putExtra("id", item.getId());
         //detailsView.putExtra("name", name);
         _view.getContext().startActivity(detailsView);
+    }
+
+    public void onSearch(String text) {
+        _view.getAdapter().clear();
+        _view.getAdapter().addAll((Collection<? extends Customer>) _srv.findByName(text));
+
+        _view.update();
     }
 }

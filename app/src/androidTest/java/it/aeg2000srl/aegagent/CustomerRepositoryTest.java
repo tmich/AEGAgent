@@ -12,12 +12,12 @@ import it.aeg2000srl.aegagent.infrastructure.DbHelper;
  */
 public class CustomerRepositoryTest extends AndroidTestCase {
 
-    DbHelper dbh;
+    TestDbHelper dbh;
     long _id;
 
     @Override
     protected void setUp() {
-        dbh = new DbHelper(getContext());
+        dbh = new TestDbHelper(getContext());
 
         /* seed */
         ContentValues cv = new ContentValues();

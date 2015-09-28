@@ -5,4 +5,5 @@ package it.aeg2000srl.aegagent.core;
  */
 public interface ICustomerRepository extends IRepository<Customer> {
     Iterable<Customer> findByName(String name);
+    Customer getByCode(String code);
 }

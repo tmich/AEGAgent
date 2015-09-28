@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AEGAgent</string>
+    <string name="title_activity_update_data">Aggiornamento Dati</string>
+    <string name="title_activity_home">Pagina Principale</string>
+    <string name="title_activity_customers">Clienti</string>
+    <string name="title_activity_customer_details">Dati Cliente</string>
+    <string name="action_settings">Impostazioni</string>
+    <string name="idle">idle</string>
+    <string name="create_order">nuovo ordine</string>
+    <string name="new_item">aggiungi...</string>
+    <string name="title_activity_order_details">Dettagli Ordine</string>
+</resources>

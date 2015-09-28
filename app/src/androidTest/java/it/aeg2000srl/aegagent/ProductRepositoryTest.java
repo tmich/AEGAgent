@@ -9,11 +9,11 @@ import it.aeg2000srl.aegagent.infrastructure.DbHelper;
  * Created by Tiziano on 28/09/2015.
  */
 public class ProductRepositoryTest extends AndroidTestCase {
-    DbHelper dbh;
+    TestDbHelper dbh;
 
     @Override
     protected void  setUp() {
-        dbh = new DbHelper(getContext());
+        dbh = new TestDbHelper(getContext());
 
         /* seed */
         ContentValues cv = new ContentValues();
@@ -21,7 +21,7 @@ public class ProductRepositoryTest extends AndroidTestCase {
         cv.put(DbHelper.ProductsTable.COL_NAME, "Ciocco Panna Tronchetto");
         cv.put(DbHelper.ProductsTable.COL_PRICE, 7.70);
 
-        dbh.getWritableDatabase().insert(DbHelper.CustomersTable.TABLENAME, null, cv);
+        dbh.getWritableDatabase().insert(DbHelper.ProductsTable.TABLENAME, null, cv);
     }
 
     public void testInsertNewProduct() {

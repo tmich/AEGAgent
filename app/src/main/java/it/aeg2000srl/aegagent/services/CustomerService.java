@@ -1,4 +1,5 @@
 package it.aeg2000srl.aegagent.services;
+import android.content.ContentValues;
 import android.content.Context;
 
 import it.aeg2000srl.aegagent.core.Customer;
@@ -34,4 +35,31 @@ public class CustomerService {
     public Iterable<Customer> getAll() {
         return _repo.getAll();
     }
+
+    public void Save(ContentValues data) {
+        long id = 0;
+        String code = data.getAsString("code");
+        Customer c = new Customer();
+
+        if(_repo.getByCode(code) != null) {
+            c = _repo.getByCode(code);
+            id = c.getId();
+        }
+
+        c.setName(data.getAsString("name"));
+        c.setCode(data.getAsString("code"));
+        c.setAddress(data.getAsString("address"));
+        c.setVatNumber(data.getAsString("iva"));
+        c.setProv(data.getAsString("prov"));
+        c.setCity(data.getAsString("city"));
+        c.setTelephone(data.getAsString("tel"));
+        c.setCap(data.getAsString("cap"));
+
+        if(id > 0) {
+            _repo.edit(c);
+        } else {
+            _repo.add(c);
+        }
+    }
+
 }

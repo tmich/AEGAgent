@@ -1,26 +1,19 @@
 package it.aeg2000srl.aegagent.mvp;
 
-import android.content.ContentValues;
 import android.content.Context;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.LayoutInflater;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import it.aeg2000srl.aegagent.R;
 
-public class CustomersActivity extends AppCompatActivity implements ICustomersView {
+public class CustomersActivity extends AppCompatActivity implements ICustomersView, SearchView.OnQueryTextListener {
 
     // UI references
     ListView customersList;
@@ -28,11 +21,22 @@ public class CustomersActivity extends AppCompatActivity implements ICustomersVi
     // Presenter
     CustomersPresenter presenter;
 
+    // DataSet
+//    CustomersArrayAdapter adapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_customers);
         customersList = (ListView)findViewById(R.id.customersList);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+//        adapter = new CustomersArrayAdapter(this, null);
+//        customersList.setAdapter(adapter);
         presenter = new CustomersPresenter(this);
 
         customersList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -40,14 +44,32 @@ public class CustomersActivity extends AppCompatActivity implements ICustomersVi
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 presenter.onItemClick(i);
             }
-        } );
+        });
+    }
+
+    @Override
+    public ListView getListView() {
+        return customersList;
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_customers, menu);
-        return true;
+
+        MenuItem searchViewItem = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchViewItem);
+        //searchView.setIconifiedByDefault(false);
+        if (searchView != null) {
+            searchView.setOnQueryTextListener(this);
+        }
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public void setAdapter(CustomersArrayAdapter adapter) {
+        customersList.setAdapter(adapter);
     }
 
     @Override
@@ -66,15 +88,35 @@ public class CustomersActivity extends AppCompatActivity implements ICustomersVi
     }
 
     @Override
-    public void setItems(ArrayList<ContentValues> items) {
-        //ArrayAdapter<ContentValues> adapter = new ArrayAdapter<ContentValues>(this, android.R.layout.simple_list_item_2, items);
-        ArrayAdapter<ContentValues> adapter = new ArrayAdapter<ContentValues>(this, android.R.layout.simple_list_item_1, items);
-        customersList.setAdapter(adapter);
+    public CustomersArrayAdapter getAdapter() {
+        return (CustomersArrayAdapter)customersList.getAdapter();
+    }
+
+    @Override
+    public void update() {
+        getAdapter().notifyDataSetChanged();
     }
 
     @Override
     public Context getContext() {
         return this;
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        //Toast.makeText(this, query, Toast.LENGTH_LONG).show();
+        if(! query.equals("")) {
+            presenter.onSearch(query);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        if(! newText.equals("")) {
+            presenter.onSearch(newText);
+        }
+        return false;
     }
 
 
@@ -88,8 +130,8 @@ public class CustomersActivity extends AppCompatActivity implements ICustomersVi
         public setName()
     }
 
-    private class CustomerAdapter extends ArrayAdapter<ContentValues> {
-        public CustomerAdapter(List<ContentValues> data) {
+    private class CustomersArrayAdapter extends ArrayAdapter<ContentValues> {
+        public CustomersArrayAdapter(List<ContentValues> data) {
             super(CustomersActivity.this, R.layout.cust_row, data);
         }
 

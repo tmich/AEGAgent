@@ -7,6 +7,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import it.aeg2000srl.aegagent.R;
@@ -18,6 +20,7 @@ public class CustomerDetailsActivity extends AppCompatActivity implements ICusto
     TextView lblName;
     TextView lblAddress;
     TextView lblCity;
+    Button btnNewOrder;
 
     // presenter
     CustomerDetailsPresenter presenter;
@@ -27,21 +30,27 @@ public class CustomerDetailsActivity extends AppCompatActivity implements ICusto
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_customer_details);
 
-        lblId = (TextView)findViewById(R.id.lblId);
         lblName = (TextView)findViewById(R.id.lblName);
         lblAddress = (TextView)findViewById(R.id.lblAddress);
         lblCity = (TextView)findViewById(R.id.lblCity);
+        btnNewOrder = (Button)findViewById(R.id.btnNewOrder);
 
         if (getIntent() != null) {
             Intent intent = getIntent();
-            long id = intent.getLongExtra("id", -1);
+            final long id = intent.getLongExtra("id", -1);
             presenter = new CustomerDetailsPresenter(this, id);
+
+            btnNewOrder.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    presenter.onNewOrder(id);
+                }
+            });
         }
     }
 
     @Override
     public void setItem(ContentValues item) {
-        lblId.setText(String.valueOf(item.getAsLong("id")));
         lblName.setText(String.valueOf(item.getAsString("name")));
         lblAddress.setText(String.valueOf(item.getAsString("address")));
         lblCity.setText(String.valueOf(item.getAsString("city")));

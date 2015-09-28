@@ -69,6 +69,31 @@ public class CustomerRepository implements ICustomerRepository {
     }
 
     @Override
+    public Customer getByCode(String code) {
+        Customer c = null;
+
+        try {
+            Cursor crs = _db.getReadableDatabase().query(
+                    DbHelper.CustomersTable.TABLENAME,
+                    DbHelper.CustomersTable._COL_NAMES,
+                    DbHelper.CustomersTable.COL_CODE + "=?",
+                    new String[]{code},
+                    null, null, null);
+
+            if (!crs.isAfterLast()) {
+                crs.moveToFirst();
+                c = make(crs);
+                crs.close();
+            }
+
+        } catch (SQLiteException sqlexc) {
+            return null;
+        }
+
+        return c;
+    }
+
+    @Override
     public Customer getById(long id) {
         Customer c = null;
 
@@ -111,8 +136,8 @@ public class CustomerRepository implements ICustomerRepository {
         ContentValues raw_data = toRaw(customer);
         try {
             _db.getWritableDatabase().update(DbHelper.CustomersTable.TABLENAME, raw_data,
-                    DbHelper.CustomersTable._ID + "=?",
-                    new String[] {String.valueOf(customer.getId())} );
+                    DbHelper.CustomersTable.COL_CODE + "=?",
+                    new String[] {customer.getCode()} );
         } catch (SQLiteException exc) {
             Log.e("Error updating customer", exc.toString());
         }
@@ -122,8 +147,8 @@ public class CustomerRepository implements ICustomerRepository {
     public void remove(Customer customer) {
         try {
             _db.getWritableDatabase().delete(DbHelper.CustomersTable.TABLENAME,
-                    DbHelper.CustomersTable._ID + "=?",
-                    new String[] {String.valueOf(customer.getId())} );
+                    DbHelper.CustomersTable.COL_CODE + "=?",
+                    new String[] {customer.getCode()} );
         } catch (SQLiteException exc) {
             Log.e("Error deleting customer", exc.toString());
         }
@@ -164,12 +189,16 @@ public class CustomerRepository implements ICustomerRepository {
         ArrayList<Customer> customers = new ArrayList<>();
 
         try {
-            Cursor crs = _db.getReadableDatabase().query(
-                    DbHelper.CustomersTable.TABLENAME,
-                    DbHelper.CustomersTable._COL_NAMES,
-                    DbHelper.CustomersTable.COL_NAME + " like '%?%' ",
-                    new String[] {name},
-                    null, null, null);
+//            Cursor crs = _db.getReadableDatabase().query(
+//                    DbHelper.CustomersTable.TABLENAME,
+//                    DbHelper.CustomersTable._COL_NAMES,
+//                    DbHelper.CustomersTable.COL_NAME + " like '%?%' ",
+//                    new String[] {name},
+//                    null, null, null);
+
+            String sql = "SELECT * FROM " + DbHelper.CustomersTable.TABLENAME + " WHERE " + DbHelper.CustomersTable.COL_NAME
+                    + " LIKE '%" + name + "%'";
+            Cursor crs = _db.getReadableDatabase().rawQuery(sql, null);
 
             crs.moveToFirst();
 

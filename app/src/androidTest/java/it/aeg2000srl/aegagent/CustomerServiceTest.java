@@ -11,13 +11,13 @@ import it.aeg2000srl.aegagent.services.CustomerService;
  * Created by tiziano.michelessi on 25/09/2015.
  */
 public class CustomerServiceTest extends AndroidTestCase {
-    DbHelper dbh;
+    TestDbHelper dbh;
     CustomerRepository repo;
     CustomerService serv;
 
     @Override
     protected void setUp() {
-        dbh = new DbHelper(getContext());
+        dbh = new TestDbHelper(getContext());
         repo = new CustomerRepository(dbh);
         serv = new CustomerService(getContext(), repo);
     }
