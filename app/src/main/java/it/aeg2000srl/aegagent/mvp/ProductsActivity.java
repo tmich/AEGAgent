@@ -5,20 +5,21 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -29,52 +30,43 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import it.aeg2000srl.aegagent.R;
-import it.aeg2000srl.aegagent.core.Customer;
-import it.aeg2000srl.aegagent.services.CustomerService;
 
-public class CustomersActivity extends AppCompatActivity implements ICustomersView, SearchView.OnQueryTextListener {
+import it.aeg2000srl.aegagent.R;
+import it.aeg2000srl.aegagent.core.Product;
+import it.aeg2000srl.aegagent.services.ProductService;
+
+public class ProductsActivity extends AppCompatActivity implements IProductsView, SearchView.OnQueryTextListener {
 
     // UI references
-    ListView customersList;
+    ListView productsList;
     ProgressDialog barProgressDialog;
     Handler updateBarHandler;
 
-    // Presenter
-    CustomersPresenter presenter;
+    // presenter
+    ProductsPresenter presenter;
 
-    // DataSet
-//    CustomersArrayAdapter adapter;
+    // Adapter
+    //ProductsArrayAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_customers);
-        customersList = (ListView)findViewById(R.id.customersList);
-        customersList.setAdapter(new CustomersArrayAdapter(this, new ArrayList<Customer>()));
-        customersList.setEmptyView(findViewById(R.id.empty_list));
+        setContentView(R.layout.activity_products);
+        productsList = (ListView)findViewById(R.id.productsList);
+        productsList.setAdapter(new ProductsArrayAdapter(this, new ArrayList<Product>()));
+        productsList.setEmptyView(findViewById(R.id.empty_list));
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        presenter = new CustomersPresenter(this);
+        presenter = new ProductsPresenter(this);
     }
-
-    @Override
-    public void setOnSelectedItem(AdapterView.OnItemClickListener listener) {
-        customersList.setOnItemClickListener(listener);
-    }
-
-//    @Override
-//    public ListView getListView() {
-//        return customersList;
-//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_customers, menu);
+        getMenuInflater().inflate(R.menu.menu_products, menu);
 
         MenuItem searchViewItem = menu.findItem(R.id.action_search);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchViewItem);
@@ -86,11 +78,6 @@ public class CustomersActivity extends AppCompatActivity implements ICustomersVi
         return super.onCreateOptionsMenu(menu);
     }
 
-//    @Override
-//    public void setAdapter(CustomersArrayAdapter adapter) {
-//        customersList.setAdapter(adapter);
-//    }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -98,6 +85,7 @@ public class CustomersActivity extends AppCompatActivity implements ICustomersVi
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
@@ -111,29 +99,39 @@ public class CustomersActivity extends AppCompatActivity implements ICustomersVi
     }
 
     protected void updateFromWs() {
-        barProgressDialog = new ProgressDialog(CustomersActivity.this);
+        barProgressDialog = new ProgressDialog(ProductsActivity.this);
         barProgressDialog.setTitle(getString(R.string.title_activity_update_data));
         barProgressDialog.setMessage(getString(R.string.please_wait));
         barProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         barProgressDialog.setProgress(0);
         barProgressDialog.show();
         updateBarHandler = new Handler();
-        new DownloadCustomersService(updateBarHandler).execute("");
+        new DownloadProductsService(updateBarHandler).execute("");
     }
 
     @Override
-    public CustomersArrayAdapter getAdapter() {
-        return (CustomersArrayAdapter)customersList.getAdapter();
+    public ProductsArrayAdapter getAdapter() {
+        return (ProductsArrayAdapter) productsList.getAdapter();
     }
 
     @Override
-    public void update() {
-        getAdapter().notifyDataSetChanged();
+    public void setOnSelectedItem(AdapterView.OnItemClickListener listener) {
+        productsList.setOnItemClickListener(listener);
+    }
+
+    @Override
+    public void showMessage(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public Context getContext() {
         return this;
+    }
+
+    @Override
+    public void update() {
+        ((ProductsArrayAdapter) (productsList.getAdapter())).notifyDataSetChanged();
     }
 
     @Override
@@ -148,26 +146,22 @@ public class CustomersActivity extends AppCompatActivity implements ICustomersVi
         return false;
     }
 
-    public void showMessage(String message) {
-        Toast.makeText(this, String.format(message), Toast.LENGTH_SHORT).show();
-    }
-
 
     /***********************************************************************************************/
     /****************                           ASNYC TASK                          ****************/
     /***********************************************************************************************/
-    class DownloadCustomersService extends AsyncTask<String, Integer, Integer> {
+    class DownloadProductsService extends AsyncTask<String, Integer, Integer> {
         private String url = null;
         private final int CONN_TIMEOUT = 10000;
         private Exception exception;
         private List<ContentValues> data;
-        private CustomerService serv;
+        private ProductService serv;
         private Handler handler;
 
-        public DownloadCustomersService(Handler handler) {
+        public DownloadProductsService(Handler handler) {
             SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(getContext());
             this.url = SP.getString("api_address", "http://192.168.56.1:5000/api/v1.0");
-            this.serv = new CustomerService(getContext());
+            this.serv = new ProductService(getContext());
             this.handler = handler;
         }
 
@@ -183,7 +177,7 @@ public class CustomersActivity extends AppCompatActivity implements ICustomersVi
 
             try {
                 // Send GET data request
-                URL url = new URL(this.url + "/customers");
+                URL url = new URL(this.url + "/products");
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setConnectTimeout(CONN_TIMEOUT);
                 urlConnection.setReadTimeout(20000);
@@ -205,12 +199,7 @@ public class CustomersActivity extends AppCompatActivity implements ICustomersVi
 //                    cv.put("id", obj.getLong("id"));
                     cv.put("code", obj.getString("code"));
                     cv.put("name", obj.getString("name"));
-                    cv.put("address", obj.getString("address"));
-                    cv.put("iva", obj.getString("iva"));
-                    cv.put("prov", obj.getString("prov"));
-                    cv.put("city", obj.getString("city"));
-                    cv.put("tel", obj.getString("tel"));
-                    cv.put("cap", obj.getString("cap"));
+                    cv.put("price", obj.getDouble("price"));
 
                     data.add(cv);
                 }
@@ -239,7 +228,7 @@ public class CustomersActivity extends AppCompatActivity implements ICustomersVi
             showMessage("ok: " + result);
             barProgressDialog.dismiss();
 
-            getAdapter().addAll((Collection<? extends Customer>) serv.getAll());
+            getAdapter().addAll((Collection<? extends Product>) serv.getAll());
             getAdapter().notifyDataSetChanged();
         }
 

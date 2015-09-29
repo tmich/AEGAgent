@@ -2,6 +2,9 @@ package it.aeg2000srl.aegagent.services;
 import android.content.ContentValues;
 import android.content.Context;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import it.aeg2000srl.aegagent.core.Customer;
 import it.aeg2000srl.aegagent.core.ICustomerRepository;
 import it.aeg2000srl.aegagent.infrastructure.CustomerRepository;
@@ -33,10 +36,16 @@ public class CustomerService {
     }
 
     public Iterable<Customer> getAll() {
-        return _repo.getAll();
+        List<Customer> results = (List<Customer>) _repo.getAll();
+        // TODO: prova
+        if (results.size() > 100) {
+            return results.subList(0, 100);
+        } else {
+            return results;
+        }
     }
 
-    public void Save(ContentValues data) {
+    public void save(ContentValues data) {
         long id = 0;
         String code = data.getAsString("code");
         Customer c = new Customer();
@@ -60,6 +69,27 @@ public class CustomerService {
         } else {
             _repo.add(c);
         }
+    }
+
+    public void saveAll(Iterable<ContentValues> data) {
+        ArrayList<Customer> customers = new ArrayList<>();
+
+        for (ContentValues cv :
+                data) {
+            Customer c = new Customer();
+            c.setName(cv.getAsString("name"));
+            c.setCode(cv.getAsString("code"));
+            c.setAddress(cv.getAsString("address"));
+            c.setVatNumber(cv.getAsString("iva"));
+            c.setProv(cv.getAsString("prov"));
+            c.setCity(cv.getAsString("city"));
+            c.setTelephone(cv.getAsString("tel"));
+            c.setCap(cv.getAsString("cap"));
+
+            customers.add(c);
+        }
+
+        _repo.addAll(customers);
     }
 
 }

@@ -11,4 +11,7 @@
     <string name="create_order">create order</string>
     <string name="title_activity_order_details">OrderDetailsActivity</string>
     <string name="new_item">new item</string>
+    <string name="please_wait">Please wait</string>
+    <string name="title_activity_products">Products</string>
+    <string name="no_data">No data</string>
 </resources>

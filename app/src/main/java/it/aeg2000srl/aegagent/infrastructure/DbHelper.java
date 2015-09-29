@@ -8,6 +8,7 @@ import android.provider.BaseColumns;
 import android.util.Log;
 
 import it.aeg2000srl.aegagent.core.Customer;
+import it.aeg2000srl.aegagent.core.Product;
 
 /**
  * Created by tiziano.michelessi on 25/09/2015.
@@ -69,7 +70,9 @@ public class DbHelper extends SQLiteOpenHelper {
         db.execSQL(CustomersTable._CREATE);
         db.execSQL(ProductsTable._CREATE);
 
-        Log.d(CustomersTable.TABLENAME, CustomersTable._CREATE);
+        // unique indexes creations
+        db.execSQL("CREATE UNIQUE INDEX idx_cust_unique_code ON " + CustomersTable.TABLENAME + "(" + CustomersTable.COL_CODE + ");");
+        db.execSQL("CREATE UNIQUE INDEX idx_prod_unique_code ON " + ProductsTable.TABLENAME + "(" + ProductsTable.COL_CODE + ");");
     }
 
     @Override

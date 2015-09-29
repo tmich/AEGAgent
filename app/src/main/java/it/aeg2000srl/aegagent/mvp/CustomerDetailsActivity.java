@@ -82,4 +82,9 @@ public class CustomerDetailsActivity extends AppCompatActivity implements ICusto
     public Context getContext() {
         return this;
     }
+
+    @Override
+    public void update() {
+
+    }
 }

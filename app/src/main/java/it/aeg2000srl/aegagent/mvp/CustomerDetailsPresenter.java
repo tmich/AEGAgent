@@ -12,7 +12,7 @@ import it.aeg2000srl.aegagent.services.CustomerService;
  * Created by tiziano.michelessi on 26/09/2015.
  */
 public class CustomerDetailsPresenter {
-    // view
+    // productsView
     ICustomerDetailsView _view;
 
     //service

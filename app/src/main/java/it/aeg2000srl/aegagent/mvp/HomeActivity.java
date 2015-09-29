@@ -10,11 +10,12 @@ import android.widget.Button;
 
 import it.aeg2000srl.aegagent.R;
 
-public class HomeActivity extends AppCompatActivity implements IView {
+public class HomeActivity extends AppCompatActivity implements IHomeView {
 
     // UI references
-    Button btnUpdate;
+    //Button btnUpdate;
     Button btnGoToCustomers;
+    Button btnGoToProducts;
 
     HomePresenter presenter;
 
@@ -22,24 +23,31 @@ public class HomeActivity extends AppCompatActivity implements IView {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        presenter = new HomePresenter(this);
-        btnUpdate = (Button)findViewById(R.id.btnUpdate);
+        //btnUpdate = (Button)findViewById(R.id.btnUpdate);
         btnGoToCustomers = (Button)findViewById(R.id.btnGoToCustomers);
+        btnGoToProducts = (Button)findViewById(R.id.btnGoToProducts);
 
-        btnUpdate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                presenter.onUpdateButtonClick();
-            }
-        });
+//        btnUpdate.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View productsView) {
+//                presenter.onUpdateButtonClick();
+//            }
+//        });
+//
+//        btnGoToCustomers.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View productsView) {
+//                presenter.onGoToCustomersButtonClick();
+//            }
+//        });
 
-        btnGoToCustomers.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                presenter.onGoToCustomersButtonClick();
-            }
-        });
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        presenter = new HomePresenter(this);
     }
 
     @Override
@@ -67,5 +75,20 @@ public class HomeActivity extends AppCompatActivity implements IView {
     @Override
     public Context getContext() {
         return this;
+    }
+
+    @Override
+    public void update() {
+
+    }
+
+    @Override
+    public void onGoToCustomers(View.OnClickListener listener) {
+        btnGoToCustomers.setOnClickListener(listener);
+    }
+
+    @Override
+    public void onGoToProducts(View.OnClickListener listener) {
+        btnGoToProducts.setOnClickListener(listener);
     }
 }

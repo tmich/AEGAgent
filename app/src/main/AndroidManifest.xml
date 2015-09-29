@@ -34,6 +34,10 @@
             android:name=".mvp.OrderDetailsActivity"
             android:label="@string/title_activity_order_details" >
         </activity>
+        <activity
+            android:name=".mvp.ProductsActivity"
+            android:label="@string/title_activity_products" >
+        </activity>
     </application>
 
 </manifest>

@@ -66,8 +66,18 @@ public class OrderDetailsActivity extends AppCompatActivity implements IOrderDet
     }
 
     @Override
-    public void setItems(ArrayList<ContentValues> items) {
-        ArrayAdapter<ContentValues> adapter = new ArrayAdapter<ContentValues>(this, android.R.layout.simple_list_item_1, items);
-        lstItems.setAdapter(adapter);
+    public ArrayAdapter getAdapter() {
+        return (ArrayAdapter)lstItems.getAdapter();
     }
+
+    @Override
+    public void update() {
+        getAdapter().notifyDataSetChanged();
+    }
+
+//    @Override
+//    public void setItems(ArrayList<ContentValues> items) {
+//        ArrayAdapter<ContentValues> adapter = new ArrayAdapter<ContentValues>(this, android.R.layout.simple_list_item_1, items);
+//        lstItems.setAdapter(adapter);
+//    }
 }

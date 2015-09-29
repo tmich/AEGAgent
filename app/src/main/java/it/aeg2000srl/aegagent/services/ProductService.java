@@ -3,12 +3,12 @@ package it.aeg2000srl.aegagent.services;
 import android.content.ContentValues;
 import android.content.Context;
 
+import java.util.ArrayList;
+
 import it.aeg2000srl.aegagent.core.Customer;
-import it.aeg2000srl.aegagent.core.ICustomerRepository;
 import it.aeg2000srl.aegagent.core.IProductRepository;
 import it.aeg2000srl.aegagent.core.Product;
-import it.aeg2000srl.aegagent.core.ProductRepository;
-import it.aeg2000srl.aegagent.infrastructure.CustomerRepository;
+import it.aeg2000srl.aegagent.infrastructure.ProductRepository;
 
 /**
  * Created by tiziano.michelessi on 28/09/2015.
@@ -40,7 +40,7 @@ public class ProductService {
         return _repo.getAll();
     }
 
-    public void Save(ContentValues data) {
+    public void save(ContentValues data) {
         long id = 0;
         String code = data.getAsString("code");
         Product p = new Product();
@@ -59,6 +59,22 @@ public class ProductService {
         } else {
             _repo.add(p);
         }
+    }
+
+    public void saveAll(Iterable<ContentValues> data) {
+        ArrayList<Product> products = new ArrayList<>();
+
+        for (ContentValues cv :
+                data) {
+            Product prod = new Product();
+            prod.setName(cv.getAsString("name"));
+            prod.setCode(cv.getAsString("code"));
+            prod.setPrice(cv.getAsDouble("price"));
+
+            products.add(prod);
+        }
+
+        _repo.addAll(products);
     }
 
 }

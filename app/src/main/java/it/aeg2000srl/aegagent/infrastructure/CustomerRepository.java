@@ -7,15 +7,30 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
+import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
+import android.database.sqlite.SQLiteStatement;
+import android.provider.ContactsContract;
 import android.util.Log;
 
+import java.sql.SQLInput;
 import java.util.ArrayList;
+import java.util.Objects;
+
 import it.aeg2000srl.aegagent.core.Customer;
 import it.aeg2000srl.aegagent.core.ICustomerRepository;
 
 public class CustomerRepository implements ICustomerRepository {
     DbHelper _db;
+
+    protected String getSelect() {
+        return String.format("SELECT %s,%s,%s,%s,%s,%s,%s,%s,%s from %s ", DbHelper.CustomersTable._ID,
+                DbHelper.CustomersTable.COL_CODE, DbHelper.CustomersTable.COL_NAME,
+                DbHelper.CustomersTable.COL_ADDRESS, DbHelper.CustomersTable.COL_CAP,
+                DbHelper.CustomersTable.COL_CITY, DbHelper.CustomersTable.COL_PROV,
+                DbHelper.CustomersTable.COL_TEL, DbHelper.CustomersTable.COL_IVA,
+                DbHelper.CustomersTable.TABLENAME);
+    }
 
     public CustomerRepository(DbHelper db) {
         _db = db;
@@ -56,16 +71,29 @@ public class CustomerRepository implements ICustomerRepository {
         return c;
     }
 
-    public long size() {
-        long cnt = -1;
-
-        try {
-            cnt = DatabaseUtils.queryNumEntries(_db.getReadableDatabase(), DbHelper.CustomersTable.TABLENAME);
-        } catch (SQLiteException exc) {
-            //
-        }
-
+    public long size() throws SQLiteException {
+        long cnt = DatabaseUtils.queryNumEntries(_db.getReadableDatabase(), DbHelper.CustomersTable.TABLENAME);
         return cnt;
+    }
+
+    @Override
+    public void addAll(Iterable<Customer> items) throws SQLiteException {
+        try {
+            _db.getWritableDatabase().beginTransaction();
+
+            for (Customer c : items) {
+                insert(c, true);
+                update(c);
+            }
+
+            _db.getWritableDatabase().setTransactionSuccessful();
+        } catch (SQLiteException exc) {
+            Log.e("Error", "Error inserting all customers: " + exc.toString());
+            throw exc;
+        }
+        finally {
+            _db.getWritableDatabase().endTransaction();
+        }
     }
 
     @Override
@@ -119,104 +147,147 @@ public class CustomerRepository implements ICustomerRepository {
     }
 
     @Override
-    public long add(Customer customer) {
-        ContentValues raw_data = toRaw(customer);
-        raw_data.remove(DbHelper.CustomersTable._ID);
+    public long add(Customer customer) throws SQLiteException{
+        long newId = 0;
+        _db.getWritableDatabase().beginTransaction();
+
         try {
-            long id = _db.getWritableDatabase().insertOrThrow(DbHelper.CustomersTable.TABLENAME, null, raw_data);
-            return id;
-        } catch (SQLiteException exc) {
-            Log.e("Error", "Error inserting customer: " + exc.toString());
-            return 0;
+            newId = insert(customer, true);
+            _db.getWritableDatabase().setTransactionSuccessful();
+            _db.getWritableDatabase().endTransaction();
+            return newId;
+        } catch (SQLiteException e) {
+            _db.getWritableDatabase().endTransaction();
+            throw e;
         }
     }
 
-    @Override
-    public void edit(Customer customer) {
-        ContentValues raw_data = toRaw(customer);
-        try {
-            _db.getWritableDatabase().update(DbHelper.CustomersTable.TABLENAME, raw_data,
-                    DbHelper.CustomersTable.COL_CODE + "=?",
-                    new String[] {customer.getCode()} );
-        } catch (SQLiteException exc) {
-            Log.e("Error updating customer", exc.toString());
-        }
+    protected long insert(Customer customer, boolean ignore)
+    {
+        String ins_sql = "INSERT " + (ignore ? "OR IGNORE" : "") + " INTO " +
+                DbHelper.CustomersTable.TABLENAME + " (" +
+                DbHelper.CustomersTable.COL_CODE + "," +
+                DbHelper.CustomersTable.COL_NAME + "," +
+                DbHelper.CustomersTable.COL_ADDRESS + "," +
+                DbHelper.CustomersTable.COL_CAP + "," +
+                DbHelper.CustomersTable.COL_CITY + "," +
+                DbHelper.CustomersTable.COL_TEL + "," +
+                DbHelper.CustomersTable.COL_IVA + ")" +
+                " VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+        SQLiteStatement ins_stmt = _db.getWritableDatabase().compileStatement(ins_sql);
+
+        ins_stmt.bindString(1, customer.getCode());
+        ins_stmt.bindString(2, customer.getName());
+        ins_stmt.bindString(3, customer.getAddress());
+        ins_stmt.bindString(4, customer.getCap());
+        ins_stmt.bindString(5, customer.getCity());
+        ins_stmt.bindString(6, customer.getTelephone());
+        ins_stmt.bindString(7, customer.getVatNumber());
+
+        return ins_stmt.executeInsert();
     }
 
     @Override
-    public void remove(Customer customer) {
+    public void edit(Customer customer) throws SQLiteException{
+        _db.getWritableDatabase().beginTransaction();
+
         try {
-            _db.getWritableDatabase().delete(DbHelper.CustomersTable.TABLENAME,
-                    DbHelper.CustomersTable.COL_CODE + "=?",
-                    new String[] {customer.getCode()} );
-        } catch (SQLiteException exc) {
-            Log.e("Error deleting customer", exc.toString());
+            update(customer);
+            _db.getWritableDatabase().setTransactionSuccessful();
+            _db.getWritableDatabase().endTransaction();
+        } catch (SQLiteException e) {
+            _db.getWritableDatabase().endTransaction();
+            throw e;
         }
     }
 
+    protected void update(Customer c) {
+        String upd_sql = "UPDATE " + DbHelper.CustomersTable.TABLENAME + " SET " +
+                DbHelper.CustomersTable.COL_CODE + "=?," +
+                DbHelper.CustomersTable.COL_NAME + "=?," +
+                DbHelper.CustomersTable.COL_ADDRESS + "=?," +
+                DbHelper.CustomersTable.COL_CAP + "=?," +
+                DbHelper.CustomersTable.COL_CITY + "=?," +
+                DbHelper.CustomersTable.COL_TEL + "=?," +
+                DbHelper.CustomersTable.COL_IVA + "=?" +
+                " WHERE " + DbHelper.CustomersTable.COL_CODE + "=?";
+
+        SQLiteStatement upd_stmt = _db.getWritableDatabase().compileStatement(upd_sql);
+
+        upd_stmt.bindString(1, c.getCode());
+        upd_stmt.bindString(2, c.getName());
+        upd_stmt.bindString(3, c.getAddress());
+        upd_stmt.bindString(4, c.getCap());
+        upd_stmt.bindString(5, c.getCity());
+        upd_stmt.bindString(6, c.getTelephone());
+        upd_stmt.bindString(7, c.getVatNumber());
+        upd_stmt.bindString(8, c.getCode());
+
+        upd_stmt.executeUpdateDelete();
+    }
+
     @Override
-    public ArrayList<Customer> getAll() {
+    public void remove(Customer customer) throws SQLiteException{
+        _db.getWritableDatabase().beginTransaction();
+
+        try {
+            delete(customer);
+            _db.getWritableDatabase().setTransactionSuccessful();
+            _db.getWritableDatabase().endTransaction();
+        } catch (SQLiteException exc) {
+            _db.getWritableDatabase().endTransaction();
+            throw exc;
+        }
+    }
+
+    protected void delete(Customer c) {
+        String del_sql = "DELETE FROM " + DbHelper.CustomersTable.TABLENAME + " WHERE " + DbHelper.CustomersTable._ID + "=?";
+        SQLiteStatement del = _db.getWritableDatabase().compileStatement(del_sql);
+        del.bindLong(1, c.getId());
+        del.executeUpdateDelete();
+    }
+
+    @Override
+    public ArrayList<Customer> getAll() throws SQLiteException{
         ArrayList<Customer> customers = new ArrayList<>();
 
-        try {
-            Cursor crs = _db.getReadableDatabase().query(
-                    DbHelper.CustomersTable.TABLENAME,
-                    DbHelper.CustomersTable._COL_NAMES,
-                    null, null,null, null, null);
+        Cursor crs = _db.getReadableDatabase().rawQuery(getSelect(), null);
+        crs.moveToFirst();
 
-            crs.moveToFirst();
-
-            if (! crs.isAfterLast()) {
-                customers = new ArrayList<>();
-
-                do {
-                    Customer c = make(crs);
-                    customers.add(c);
-                } while (crs.moveToNext());
-            }
-
-            crs.close();
-
-        } catch (SQLiteException sqlexc) {
-            return null;
+        if (! crs.isAfterLast()) {
+            do {
+                Customer c = make(crs);
+                customers.add(c);
+            } while (crs.moveToNext());
         }
+        crs.close();
 
         return customers;
     }
 
     @Override
-    public ArrayList<Customer> findByName(String name) {
+    public ArrayList<Customer> findByName(String name) throws SQLiteException {
         ArrayList<Customer> customers = new ArrayList<>();
 
-        try {
-//            Cursor crs = _db.getReadableDatabase().query(
-//                    DbHelper.CustomersTable.TABLENAME,
-//                    DbHelper.CustomersTable._COL_NAMES,
-//                    DbHelper.CustomersTable.COL_NAME + " like '%?%' ",
-//                    new String[] {name},
-//                    null, null, null);
+        String select = getSelect() + " WHERE " + DbHelper.CustomersTable.COL_NAME + " LIKE " + DatabaseUtils.sqlEscapeString("%" + name + "%") + "";
+        Cursor crs = _db.getReadableDatabase().rawQuery(select, null);
 
-            String sql = "SELECT * FROM " + DbHelper.CustomersTable.TABLENAME + " WHERE " + DbHelper.CustomersTable.COL_NAME
-                    + " LIKE '%" + name + "%'";
-            Cursor crs = _db.getReadableDatabase().rawQuery(sql, null);
-
-            crs.moveToFirst();
-
-            if (! crs.isAfterLast()) {
-                customers = new ArrayList<>();
-
-                do {
-                    Customer c = make(crs);
-                    customers.add(c);
-                } while (crs.moveToNext());
-            }
-
-            crs.close();
-
-        } catch (SQLiteException sqlexc) {
-            return null;
+        crs.moveToFirst();
+        if (! crs.isAfterLast()) {
+            do {
+                Customer c = make(crs);
+                customers.add(c);
+            } while (crs.moveToNext());
         }
 
+        crs.close();
+
         return customers;
+    }
+
+    @Override
+    protected void finalize() {
+        _db.close();
     }
 }

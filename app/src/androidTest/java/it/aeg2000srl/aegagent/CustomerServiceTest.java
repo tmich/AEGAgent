@@ -22,12 +22,12 @@ public class CustomerServiceTest extends AndroidTestCase {
         serv = new CustomerService(getContext(), repo);
     }
 
-    public void testCustomerServiceSizeShouldBeMoreThanZero() {
-        assertTrue(repo.size() > 0);
-    }
-
-    public void testCustomerServiceShouldRetrieveCustomerById() {
-        Customer c = serv.getById(1);
-        assertEquals(c.getId(), 1);
-    }
+//    public void testCustomerServiceSizeShouldBeMoreThanZero() {
+//        assertTrue(repo.size() > 0);
+//    }
+//
+//    public void testCustomerServiceShouldRetrieveCustomerById() {
+//        Customer c = serv.getById(1);
+//        assertEquals(c.getId(), 1);
+//    }
 }

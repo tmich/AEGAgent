@@ -44,9 +44,11 @@ public class UpdateDataActivity extends AppCompatActivity implements IUpdateData
         btnMakeUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                lblStatus.setText("Downloading...");
+                lblStatus.setText("Downloading customers...");
                 new DownloadCustomersService().execute("");
-                new DownloadCustomersService().execute("");
+
+//                lblStatus.setText("Downloading products...");
+//                new DownloadProductsService().execute("");
             }
         });
     }
@@ -81,6 +83,11 @@ public class UpdateDataActivity extends AppCompatActivity implements IUpdateData
     @Override
     public Context getContext() {
         return this;
+    }
+
+    @Override
+    public void update() {
+
     }
 
     /* Download customers */
@@ -137,8 +144,10 @@ public class UpdateDataActivity extends AppCompatActivity implements IUpdateData
                     cv.put("cap", obj.getString("cap"));
 
                     data.add(cv);
-                    serv.Save(cv);
+//                    serv.save(cv);
                 }
+
+                serv.saveAll(data);
             }
             catch (Exception e) {
                 e.printStackTrace();
@@ -247,7 +256,7 @@ public class UpdateDataActivity extends AppCompatActivity implements IUpdateData
                     cv.put("price", obj.getDouble("price"));
 
                     data.add(cv);
-                    serv.Save(cv);
+                    serv.save(cv);
                 }
             }
             catch (Exception e) {

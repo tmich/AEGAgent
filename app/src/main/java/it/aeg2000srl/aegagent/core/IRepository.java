@@ -10,4 +10,5 @@ public interface IRepository<T> {
     void remove(T t);
     Iterable<T> getAll();
     long size();
+    void addAll(Iterable<T> items);
 }

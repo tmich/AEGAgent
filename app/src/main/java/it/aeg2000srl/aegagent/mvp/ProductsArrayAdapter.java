@@ -13,18 +13,19 @@ import java.util.List;
 
 import it.aeg2000srl.aegagent.R;
 import it.aeg2000srl.aegagent.core.Customer;
+import it.aeg2000srl.aegagent.core.Product;
 
 /**
- * Created by tiziano.michelessi on 28/09/2015.
+ * Created by tiziano.michelessi on 29/09/2015.
  */
-public class CustomersArrayAdapter extends ArrayAdapter<Customer> {
+public class ProductsArrayAdapter extends ArrayAdapter<Product> {
     private final Activity context;
-    private final List<Customer> customers;
+    private final List<Product> products;
 
-    public CustomersArrayAdapter(Activity context, List<Customer> customers) {
-        super(context, R.layout.customers, customers);
+    public ProductsArrayAdapter(Activity context, List<Product> products) {
+        super(context, R.layout.products, products);
         this.context = context;
-        this.customers = customers;
+        this.products = products;
     }
 
     // static to save the reference to the outer class and to avoid access to
@@ -48,7 +49,7 @@ public class CustomersArrayAdapter extends ArrayAdapter<Customer> {
         View rowView = convertView;
         if (rowView == null) {
             LayoutInflater inflater = context.getLayoutInflater();
-            rowView = inflater.inflate(R.layout.customers, null, true);
+            rowView = inflater.inflate(R.layout.products, null, true);
             holder = new ViewHolder();
             holder.textView = (TextView) rowView.findViewById(R.id.txtName);
             holder.imageView = (ImageView) rowView.findViewById(R.id.icon);
@@ -59,12 +60,11 @@ public class CustomersArrayAdapter extends ArrayAdapter<Customer> {
             holder = (ViewHolder) rowView.getTag();
         }
 
-        holder.textView.setText(customers.get(position).getName());
+        holder.textView.setText(products.get(position).getName());
         // Change the icon for Windows and iPhone
-        String s = customers.get(position).getName();
+        String s = products.get(position).getName();
 //        holder.imageView.setImageResource(android.support.v7.appcompat.R.drawable.ic);
 
         return rowView;
     }
 }
-
