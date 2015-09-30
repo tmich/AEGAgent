@@ -18,6 +18,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
@@ -160,13 +161,9 @@ public class ProductsActivity extends AppCompatActivity implements IProductsView
 
         public DownloadProductsService(Handler handler) {
             SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(getContext());
-            this.url = SP.getString("api_address", "http://192.168.56.1:5000/api/v1.0");
+            this.url = SP.getString("api_address", getString(R.string.test_url));
             this.serv = new ProductService(getContext());
             this.handler = handler;
-        }
-
-        public List<ContentValues> getData() {
-            return data;
         }
 
         @Override
@@ -207,9 +204,9 @@ public class ProductsActivity extends AppCompatActivity implements IProductsView
                 serv.saveAll(data);
             }
             catch (Exception e) {
-                e.printStackTrace();
                 exception = e;
-                showMessage(e.toString());
+                e.printStackTrace();
+                //showMessage(e.toString());
             }
 
             return sz;
@@ -225,11 +222,30 @@ public class ProductsActivity extends AppCompatActivity implements IProductsView
         }
 
         protected void onPostExecute(Integer result) {
-            showMessage("ok: " + result);
-            barProgressDialog.dismiss();
+            if(exception == null) {
+                showMessage("ok: " + result);
 
-            getAdapter().addAll((Collection<? extends Product>) serv.getAll());
-            getAdapter().notifyDataSetChanged();
+                getAdapter().addAll((Collection<? extends Product>) serv.getAll());
+                getAdapter().notifyDataSetChanged();
+            } else {
+                showError(exception);
+            }
+            barProgressDialog.dismiss();
+        }
+
+        private void showError(Exception e) {
+            try {
+                throw e;
+            }
+            catch (IOException ex) {
+                showMessage("Errore di connessione");
+            }
+            catch (JSONException ex) {
+                showMessage("Ricevuti dati non validi");
+            }
+            catch (Exception ex) {
+                showMessage("Errore sconosciuto");
+            }
         }
 
         private String readStream(InputStream in) {

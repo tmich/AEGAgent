@@ -18,6 +18,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -166,7 +167,7 @@ public class CustomersActivity extends AppCompatActivity implements ICustomersVi
 
         public DownloadCustomersService(Handler handler) {
             SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(getContext());
-            this.url = SP.getString("api_address", "http://192.168.56.1:5000/api/v1.0");
+            this.url = SP.getString("api_address", getString(R.string.test_url));
             this.serv = new CustomerService(getContext());
             this.handler = handler;
         }
@@ -220,7 +221,7 @@ public class CustomersActivity extends AppCompatActivity implements ICustomersVi
             catch (Exception e) {
                 e.printStackTrace();
                 exception = e;
-                showMessage(e.toString());
+//                showMessage(e.toString());
             }
 
             return sz;
@@ -236,11 +237,30 @@ public class CustomersActivity extends AppCompatActivity implements ICustomersVi
         }
 
         protected void onPostExecute(Integer result) {
-            showMessage("ok: " + result);
-            barProgressDialog.dismiss();
+            if(exception == null) {
+                showMessage("ok: " + result);
 
-            getAdapter().addAll((Collection<? extends Customer>) serv.getAll());
-            getAdapter().notifyDataSetChanged();
+                getAdapter().addAll((Collection<? extends Customer>) serv.getAll());
+                getAdapter().notifyDataSetChanged();
+            } else {
+                showError(exception);
+            }
+            barProgressDialog.dismiss();
+        }
+
+        private void showError(Exception e) {
+            try {
+                throw e;
+            }
+            catch (IOException ex) {
+                showMessage("Errore di connessione");
+            }
+            catch (JSONException ex) {
+                showMessage("Ricevuti dati non validi");
+            }
+            catch (Exception ex) {
+                showMessage("Errore sconosciuto");
+            }
         }
 
         private String readStream(InputStream in) {
