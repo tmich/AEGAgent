@@ -11,26 +11,29 @@ import it.aeg2000srl.aegagent.core.Product;
 import it.aeg2000srl.aegagent.services.ProductService;
 
 /**
- * Created by tiziano.michelessi on 29/09/2015.
+ * Created by tiziano.michelessi on 30/09/2015.
  */
-public class ProductsPresenter implements IProductsPresenter {
+public class ChooseProductPresenter implements IProductsPresenter {
     // productsView
     IProductsView productsView;
 
     // service
     ProductService service;
 
-    // Adapter
-//    ProductsArrayAdapter adapter;
-
-    public ProductsPresenter(final IProductsView view) {
-        this.productsView = view;
+    public ChooseProductPresenter(IProductsView productsActivity) {
+        this.productsView = productsActivity;
         this.service = new ProductService(this.productsView.getContext());
 
         this.productsView.setOnSelectedItem(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                productsView.showMessage(productsView.getAdapter().getItem(position).getName());
+//                ProductsArrayAdapter.ViewHolder holder = (ProductsArrayAdapter.ViewHolder)view.getTag(); //productsView.getAdapter().getView(position,view,parent).getTag();
+//                long result = Long.parseLong(holder.idView.getText().toString());
+                Product product = productsView.getAdapter().getItem(position);
+                Intent returnIntent = new Intent();
+                returnIntent.putExtra("result", product.getId());
+                ((Activity)productsView).setResult(Activity.RESULT_OK, returnIntent);
+                ((Activity)productsView).finish();
             }
         });
 

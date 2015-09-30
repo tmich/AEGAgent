@@ -24,12 +24,12 @@ public class CustomerRepository implements ICustomerRepository {
     DbHelper _db;
 
     protected String getSelect() {
-        return String.format("SELECT %s,%s,%s,%s,%s,%s,%s,%s,%s from %s ", DbHelper.CustomersTable._ID,
+        return String.format("SELECT %s,%s,%s,%s,%s,%s,%s,%s,%s from %s order by %s", DbHelper.CustomersTable._ID,
                 DbHelper.CustomersTable.COL_CODE, DbHelper.CustomersTable.COL_NAME,
                 DbHelper.CustomersTable.COL_ADDRESS, DbHelper.CustomersTable.COL_CAP,
                 DbHelper.CustomersTable.COL_CITY, DbHelper.CustomersTable.COL_PROV,
                 DbHelper.CustomersTable.COL_TEL, DbHelper.CustomersTable.COL_IVA,
-                DbHelper.CustomersTable.TABLENAME);
+                DbHelper.CustomersTable.TABLENAME, DbHelper.CustomersTable.COL_NAME);
     }
 
     public CustomerRepository(DbHelper db) {

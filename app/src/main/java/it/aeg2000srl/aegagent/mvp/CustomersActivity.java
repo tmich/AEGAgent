@@ -57,8 +57,8 @@ public class CustomersActivity extends AppCompatActivity implements ICustomersVi
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
         presenter = new CustomersPresenter(this);
     }
 

@@ -44,7 +44,7 @@ public class ProductsActivity extends AppCompatActivity implements IProductsView
     Handler updateBarHandler;
 
     // presenter
-    ProductsPresenter presenter;
+    IProductsPresenter presenter;
 
     // Adapter
     //ProductsArrayAdapter adapter;
@@ -59,9 +59,14 @@ public class ProductsActivity extends AppCompatActivity implements IProductsView
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        presenter = new ProductsPresenter(this);
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+
+        if(getIntent().getAction().equals("CHOOSE_PRODUCT")) {
+            presenter = new ChooseProductPresenter(this);
+        } else {
+            presenter = new ProductsPresenter(this);
+        }
     }
 
     @Override

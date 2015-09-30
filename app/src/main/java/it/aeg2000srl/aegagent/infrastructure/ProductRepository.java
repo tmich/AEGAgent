@@ -216,7 +216,7 @@ public class ProductRepository implements IProductRepository {
         Cursor crs = _db.getReadableDatabase().query(
                 DbHelper.ProductsTable.TABLENAME,
                 DbHelper.ProductsTable._COL_NAMES,
-                null, null, null, null, null);
+                null, null, null, null, DbHelper.ProductsTable.COL_NAME);
 
         crs.moveToFirst();
 

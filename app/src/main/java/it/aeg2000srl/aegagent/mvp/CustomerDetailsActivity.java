@@ -34,6 +34,11 @@ public class CustomerDetailsActivity extends AppCompatActivity implements ICusto
         lblAddress = (TextView)findViewById(R.id.lblAddress);
         lblCity = (TextView)findViewById(R.id.lblCity);
         btnNewOrder = (Button)findViewById(R.id.btnNewOrder);
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
 
         if (getIntent() != null) {
             Intent intent = getIntent();

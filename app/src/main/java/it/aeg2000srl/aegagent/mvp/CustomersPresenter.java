@@ -2,6 +2,7 @@ package it.aeg2000srl.aegagent.mvp;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 
@@ -39,6 +40,7 @@ public class CustomersPresenter {
         });
 
         updateView();
+        Log.w("CustomersPresenter", "instantiated!");
     }
 
     public void updateView()

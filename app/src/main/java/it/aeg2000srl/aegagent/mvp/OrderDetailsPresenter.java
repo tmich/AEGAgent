@@ -1,6 +1,8 @@
 package it.aeg2000srl.aegagent.mvp;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.view.View;
 
 /**
  * Created by tiziano.michelessi on 28/09/2015.
