@@ -39,20 +39,44 @@ public class OrderService {
     }
 
     public Iterable<Order> getByCustomer(Customer customer) {
-        return repo.findByCustomerId(customer.getId());
+        CustomerService csrv = new CustomerService(context);
+        OrderItemService isrv = new OrderItemService(context);
+        Iterable<Order> orders = repo.findByCustomerId(customer.getId());
+        for(Order order: orders) {
+            order.setCustomer(csrv.getById(order.getCustomerId()));
+            order.getItems().clear();
+            for (OrderItem it : isrv.getItemsByOrderId(order.getId())) {
+                order.add(it);
+            }
+        }
+        return orders;
     }
 
-    public void addItem(Order order, OrderItem item) {
+    public void addItem(long order_id, OrderItem item) {
         OrderItemRepository orderItemRepository = new OrderItemRepository(context);
-        item.setOrderId(order.getId());
+        item.setOrderId(order_id);
         orderItemRepository.add(item);
     }
 
-    public void save(Order o) {
-        if (o.getId() == 0) {
-            repo.add(o);
+    public long save(Order o) {
+        long id = o.getId();
+        if (id == 0) {
+            id = repo.add(o);
         } else {
             repo.edit(o);
         }
+
+        OrderItemRepository orderItemRepository = new OrderItemRepository(context);
+        for (OrderItem item : o.getItems()) {
+            item.setOrderId(id);
+
+            if (item.getId() == 0) {
+                orderItemRepository.add(item);
+            } else {
+                orderItemRepository.edit(item);
+            }
+        }
+
+        return id;
     }
 }

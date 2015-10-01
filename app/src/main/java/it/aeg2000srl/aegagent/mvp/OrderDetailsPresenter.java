@@ -1,16 +1,10 @@
 package it.aeg2000srl.aegagent.mvp;
 
-import android.app.Activity;
-import android.content.Intent;
-import android.view.View;
-
 import it.aeg2000srl.aegagent.core.Customer;
 import it.aeg2000srl.aegagent.core.Order;
 import it.aeg2000srl.aegagent.core.OrderItem;
-import it.aeg2000srl.aegagent.core.Product;
 import it.aeg2000srl.aegagent.services.CustomerService;
 import it.aeg2000srl.aegagent.services.OrderService;
-import it.aeg2000srl.aegagent.services.ProductService;
 
 /**
  * Created by tiziano.michelessi on 28/09/2015.
@@ -52,19 +46,27 @@ public class OrderDetailsPresenter {
     }
 
     public void addItem(long product_id, int qty, String notes) {
-        ProductService pserv = new ProductService(_view.getContext());
-        Product p = pserv.getById(product_id);
+//        ProductService pserv = new ProductService(_view.getContext());
+//        Product p = pserv.getById(product_id);
 
-        if (p != null) {
-            OrderItem item = new OrderItem(p, qty);
-            service.addItem(order, item);
+        if (product_id > 0) {
+            OrderItem item = new OrderItem(product_id, qty);
+            //service.addItem(order, item);
+            //item.setProductId(p.getId());
+            order.add(item);
             _view.getAdapter().add(item);
         }
 
         _view.update();
     }
 
+    //todo: remove item
+
     public void save() {
-        service.save(order);
+        long id = service.save(order);
+
+//        for(OrderItem item : order.getItems()) {
+//            service.addItem(id, item);
+//        }
     }
 }

@@ -1,5 +1,6 @@
 package it.aeg2000srl.aegagent.core;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -18,6 +19,7 @@ public class Order {
 
     public Order() {
         setCreationDate(new Date());
+        items = new ArrayList<>();
     }
 
     public Order(Customer customer) {
@@ -97,5 +99,6 @@ public class Order {
     @Override
     public String toString() {
         return getCustomer().getName() + " del " + getCreationDate() + "(x" + getItems().size() + ")";
+
     }
 }

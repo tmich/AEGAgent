@@ -27,7 +27,7 @@ public class CustomerDetailsActivity extends AppCompatActivity implements ICusto
     TextView lblName;
     TextView lblAddress;
     TextView lblCity;
-    TextView lblWaitingOrders;
+//    TextView lblWaitingOrders;
     Button btnNewOrder;
     ListView lstWaitingOrders;
 
@@ -46,7 +46,7 @@ public class CustomerDetailsActivity extends AppCompatActivity implements ICusto
         lblName = (TextView)findViewById(R.id.lblName);
         lblAddress = (TextView)findViewById(R.id.lblAddress);
         lblCity = (TextView)findViewById(R.id.lblCity);
-        lblWaitingOrders = (TextView)findViewById(R.id.lblWaitingOrders);
+//        lblWaitingOrders = (TextView)findViewById(R.id.lblWaitingOrders);
         btnNewOrder = (Button)findViewById(R.id.btnNewOrder);
         lstWaitingOrders = (ListView)findViewById(R.id.lstWaitingOrders);
     }

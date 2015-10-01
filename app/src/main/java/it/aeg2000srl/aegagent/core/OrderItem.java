@@ -8,18 +8,19 @@ public class OrderItem {
     protected int qty;
     protected long product_id;
     protected long order_id;
-    protected Product product;
+//    protected Product product;
     protected String notes;
     protected String discount;
 
     public OrderItem() {}
 
-    public OrderItem(Product prod) {
-        this(prod, 1);
+    public OrderItem(long product_id) {
+        this(product_id, 1);
     }
 
-    public OrderItem(Product prod, int qty) {
-        this.product = prod;
+    public OrderItem(long product_id, int qty) {
+//        this.product = prod;
+        this.product_id = product_id;
         this.qty = qty;
     }
 
@@ -31,13 +32,13 @@ public class OrderItem {
         this.qty = qty;
     }
 
-    public Product getProduct() {
-        return product;
-    }
-
-    public void setProduct(Product product) {
-        this.product = product;
-    }
+//    public Product getProduct() {
+//        return product;
+//    }
+//
+//    public void setProduct(Product product) {
+//        this.product = product;
+//    }
 
     public String getNotes() {
         return notes;
@@ -57,7 +58,7 @@ public class OrderItem {
 
     @Override
     public String toString() {
-        return getQty() + "x " + getProduct().getName();
+        return getQty() + "x " + this.product_id;
     }
 
     public long getProductId() {

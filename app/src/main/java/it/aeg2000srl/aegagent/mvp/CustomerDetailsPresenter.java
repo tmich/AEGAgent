@@ -8,6 +8,7 @@ import java.util.List;
 import it.aeg2000srl.aegagent.core.Customer;
 import it.aeg2000srl.aegagent.core.Order;
 import it.aeg2000srl.aegagent.services.CustomerService;
+import it.aeg2000srl.aegagent.services.OrderItemService;
 import it.aeg2000srl.aegagent.services.OrderService;
 
 /**
@@ -39,6 +40,11 @@ public class CustomerDetailsPresenter {
         _view.getWaitingOrdersAdapter().clear();
 
         for (Order order : waitingOrders) {
+//            CustomerService customerService = new CustomerService(_view.getContext());
+//            Customer customer = customerService.getById(order.getCustomerId());
+//            OrderItemService orderItemService = new OrderItemService();
+
+//            order.setCustomer(customer);
             _view.getWaitingOrdersAdapter().add(order);
         }
 
