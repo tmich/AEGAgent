@@ -7,15 +7,11 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
-import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteStatement;
-import android.provider.ContactsContract;
 import android.util.Log;
 
-import java.sql.SQLInput;
 import java.util.ArrayList;
-import java.util.Objects;
 
 import it.aeg2000srl.aegagent.core.Customer;
 import it.aeg2000srl.aegagent.core.ICustomerRepository;
@@ -25,11 +21,11 @@ public class CustomerRepository implements ICustomerRepository {
 
     protected String getSelect() {
         return String.format("SELECT %s,%s,%s,%s,%s,%s,%s,%s,%s from %s order by %s", DbHelper.CustomersTable._ID,
-                DbHelper.CustomersTable.COL_CODE, DbHelper.CustomersTable.COL_NAME,
-                DbHelper.CustomersTable.COL_ADDRESS, DbHelper.CustomersTable.COL_CAP,
-                DbHelper.CustomersTable.COL_CITY, DbHelper.CustomersTable.COL_PROV,
-                DbHelper.CustomersTable.COL_TEL, DbHelper.CustomersTable.COL_IVA,
-                DbHelper.CustomersTable.TABLENAME, DbHelper.CustomersTable.COL_NAME);
+                DbHelper.CustomersTable.CODE, DbHelper.CustomersTable.NAME,
+                DbHelper.CustomersTable.ADDRESS, DbHelper.CustomersTable.CAP,
+                DbHelper.CustomersTable.CITY, DbHelper.CustomersTable.PROV,
+                DbHelper.CustomersTable.TEL, DbHelper.CustomersTable.IVA,
+                DbHelper.CustomersTable.TABLENAME, DbHelper.CustomersTable.NAME);
     }
 
     public CustomerRepository(DbHelper db) {
@@ -44,14 +40,14 @@ public class CustomerRepository implements ICustomerRepository {
         ContentValues cv = new ContentValues();
 
         cv.put(DbHelper.CustomersTable._ID, cust.getId());
-        cv.put(DbHelper.CustomersTable.COL_CODE, cust.getCode());
-        cv.put(DbHelper.CustomersTable.COL_NAME, cust.getName());
-        cv.put(DbHelper.CustomersTable.COL_ADDRESS, cust.getAddress());
-        cv.put(DbHelper.CustomersTable.COL_CAP, cust.getCap());
-        cv.put(DbHelper.CustomersTable.COL_CITY, cust.getCity());
-        cv.put(DbHelper.CustomersTable.COL_PROV, cust.getProv());
-        cv.put(DbHelper.CustomersTable.COL_TEL, cust.getTelephone());
-        cv.put(DbHelper.CustomersTable.COL_IVA, cust.getVatNumber());
+        cv.put(DbHelper.CustomersTable.CODE, cust.getCode());
+        cv.put(DbHelper.CustomersTable.NAME, cust.getName());
+        cv.put(DbHelper.CustomersTable.ADDRESS, cust.getAddress());
+        cv.put(DbHelper.CustomersTable.CAP, cust.getCap());
+        cv.put(DbHelper.CustomersTable.CITY, cust.getCity());
+        cv.put(DbHelper.CustomersTable.PROV, cust.getProv());
+        cv.put(DbHelper.CustomersTable.TEL, cust.getTelephone());
+        cv.put(DbHelper.CustomersTable.IVA, cust.getVatNumber());
 
         return cv;
     }
@@ -71,8 +67,15 @@ public class CustomerRepository implements ICustomerRepository {
         return c;
     }
 
-    public long size() throws SQLiteException {
-        long cnt = DatabaseUtils.queryNumEntries(_db.getReadableDatabase(), DbHelper.CustomersTable.TABLENAME);
+    public long size() {
+        long cnt = -1;
+
+        try {
+            DatabaseUtils.queryNumEntries(_db.getReadableDatabase(), DbHelper.CustomersTable.TABLENAME);
+        } catch (SQLiteException e) {
+            Log.e(getClass().getCanonicalName() + ".size()", e.toString());
+        }
+
         return cnt;
     }
 
@@ -103,8 +106,8 @@ public class CustomerRepository implements ICustomerRepository {
         try {
             Cursor crs = _db.getReadableDatabase().query(
                     DbHelper.CustomersTable.TABLENAME,
-                    DbHelper.CustomersTable._COL_NAMES,
-                    DbHelper.CustomersTable.COL_CODE + "=?",
+                    DbHelper.CustomersTable.getColumnNames(),
+                    DbHelper.CustomersTable.CODE + "=?",
                     new String[]{code},
                     null, null, null);
 
@@ -128,7 +131,7 @@ public class CustomerRepository implements ICustomerRepository {
         try {
             Cursor crs = _db.getReadableDatabase().query(
                     DbHelper.CustomersTable.TABLENAME,
-                    DbHelper.CustomersTable._COL_NAMES,
+                    DbHelper.CustomersTable.getColumnNames(),
                     DbHelper.CustomersTable._ID + "=?",
                     new String[]{String.valueOf(id)},
                     null, null, null, "1");
@@ -166,13 +169,13 @@ public class CustomerRepository implements ICustomerRepository {
     {
         String ins_sql = "INSERT " + (ignore ? "OR IGNORE" : "") + " INTO " +
                 DbHelper.CustomersTable.TABLENAME + " (" +
-                DbHelper.CustomersTable.COL_CODE + "," +
-                DbHelper.CustomersTable.COL_NAME + "," +
-                DbHelper.CustomersTable.COL_ADDRESS + "," +
-                DbHelper.CustomersTable.COL_CAP + "," +
-                DbHelper.CustomersTable.COL_CITY + "," +
-                DbHelper.CustomersTable.COL_TEL + "," +
-                DbHelper.CustomersTable.COL_IVA + ")" +
+                DbHelper.CustomersTable.CODE + "," +
+                DbHelper.CustomersTable.NAME + "," +
+                DbHelper.CustomersTable.ADDRESS + "," +
+                DbHelper.CustomersTable.CAP + "," +
+                DbHelper.CustomersTable.CITY + "," +
+                DbHelper.CustomersTable.TEL + "," +
+                DbHelper.CustomersTable.IVA + ")" +
                 " VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         SQLiteStatement ins_stmt = _db.getWritableDatabase().compileStatement(ins_sql);
@@ -204,14 +207,14 @@ public class CustomerRepository implements ICustomerRepository {
 
     protected void update(Customer c) {
         String upd_sql = "UPDATE " + DbHelper.CustomersTable.TABLENAME + " SET " +
-                DbHelper.CustomersTable.COL_CODE + "=?," +
-                DbHelper.CustomersTable.COL_NAME + "=?," +
-                DbHelper.CustomersTable.COL_ADDRESS + "=?," +
-                DbHelper.CustomersTable.COL_CAP + "=?," +
-                DbHelper.CustomersTable.COL_CITY + "=?," +
-                DbHelper.CustomersTable.COL_TEL + "=?," +
-                DbHelper.CustomersTable.COL_IVA + "=?" +
-                " WHERE " + DbHelper.CustomersTable.COL_CODE + "=?";
+                DbHelper.CustomersTable.CODE + "=?," +
+                DbHelper.CustomersTable.NAME + "=?," +
+                DbHelper.CustomersTable.ADDRESS + "=?," +
+                DbHelper.CustomersTable.CAP + "=?," +
+                DbHelper.CustomersTable.CITY + "=?," +
+                DbHelper.CustomersTable.TEL + "=?," +
+                DbHelper.CustomersTable.IVA + "=?" +
+                " WHERE " + DbHelper.CustomersTable.CODE + "=?";
 
         SQLiteStatement upd_stmt = _db.getWritableDatabase().compileStatement(upd_sql);
 
@@ -270,7 +273,7 @@ public class CustomerRepository implements ICustomerRepository {
     public ArrayList<Customer> findByName(String name) throws SQLiteException {
         ArrayList<Customer> customers = new ArrayList<>();
 
-        String select = getSelect() + " WHERE " + DbHelper.CustomersTable.COL_NAME + " LIKE " + DatabaseUtils.sqlEscapeString("%" + name + "%") + "";
+        String select = getSelect() + " WHERE " + DbHelper.CustomersTable.NAME + " LIKE " + DatabaseUtils.sqlEscapeString("%" + name + "%") + "";
         Cursor crs = _db.getReadableDatabase().rawQuery(select, null);
 
         crs.moveToFirst();

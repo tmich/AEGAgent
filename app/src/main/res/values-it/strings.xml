@@ -13,4 +13,5 @@
     <string name="please_wait">Attendere prego...</string>
     <string name="title_activity_products">Prodotti</string>
     <string name="no_data">Nessun dato presente</string>
+    <string name="save">Salva</string>
 </resources>

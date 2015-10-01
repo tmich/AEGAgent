@@ -4,7 +4,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
-import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
@@ -22,8 +21,8 @@ public class ProductRepository implements IProductRepository {
 
     protected String getSelect() {
         return String.format("SELECT %s, %s,%s,%s from %s ", DbHelper.ProductsTable._ID,
-                DbHelper.ProductsTable.COL_CODE, DbHelper.ProductsTable.COL_NAME,
-                DbHelper.ProductsTable.COL_PRICE, DbHelper.ProductsTable.TABLENAME);
+                DbHelper.ProductsTable.CODE, DbHelper.ProductsTable.NAME,
+                DbHelper.ProductsTable.PRICE, DbHelper.ProductsTable.TABLENAME);
     }
 
     public ProductRepository(DbHelper db) {
@@ -38,9 +37,9 @@ public class ProductRepository implements IProductRepository {
         ContentValues cv = new ContentValues();
 
         cv.put(DbHelper.ProductsTable._ID, prod.getId());
-        cv.put(DbHelper.ProductsTable.COL_CODE, prod.getCode());
-        cv.put(DbHelper.ProductsTable.COL_NAME, prod.getName());
-        cv.put(DbHelper.ProductsTable.COL_PRICE, prod.getPrice());
+        cv.put(DbHelper.ProductsTable.CODE, prod.getCode());
+        cv.put(DbHelper.ProductsTable.NAME, prod.getName());
+        cv.put(DbHelper.ProductsTable.PRICE, prod.getPrice());
 
         return cv;
     }
@@ -91,7 +90,7 @@ public class ProductRepository implements IProductRepository {
     public Product getByCode(String code) throws SQLiteException {
         Product prod = null;
 
-        String whereClause = DbHelper.ProductsTable.COL_CODE + "=" + DatabaseUtils.sqlEscapeString(code);
+        String whereClause = DbHelper.ProductsTable.CODE + "=" + DatabaseUtils.sqlEscapeString(code);
         String sql = getSelect() + " WHERE " + whereClause;
         Cursor crs = _db.getReadableDatabase().rawQuery(sql, null);
 
@@ -110,7 +109,7 @@ public class ProductRepository implements IProductRepository {
 
         Cursor crs = _db.getReadableDatabase().query(
                 DbHelper.ProductsTable.TABLENAME,
-                DbHelper.ProductsTable._COL_NAMES,
+                DbHelper.ProductsTable.getColumnNames(),
                 DbHelper.ProductsTable._ID + "=?",
                 new String[]{String.valueOf(id)},
                 null, null, null, "1");
@@ -143,9 +142,9 @@ public class ProductRepository implements IProductRepository {
     protected long insert(Product product, boolean ignore) {
         String ins_sql = "INSERT " + (ignore ? "OR IGNORE" : "") + " INTO " +
                 DbHelper.ProductsTable.TABLENAME + " (" +
-                DbHelper.ProductsTable.COL_CODE + "," +
-                DbHelper.ProductsTable.COL_NAME + "," +
-                DbHelper.ProductsTable.COL_PRICE + ")" +
+                DbHelper.ProductsTable.CODE + "," +
+                DbHelper.ProductsTable.NAME + "," +
+                DbHelper.ProductsTable.PRICE + ")" +
                 " VALUES (?, ?, ?)";
 
         SQLiteStatement ins_stmt = _db.getWritableDatabase().compileStatement(ins_sql);
@@ -173,10 +172,10 @@ public class ProductRepository implements IProductRepository {
 
     protected void update(Product product) {
         String upd_sql = "UPDATE " + DbHelper.ProductsTable.TABLENAME + " SET " +
-                DbHelper.ProductsTable.COL_CODE + "=?," +
-                DbHelper.ProductsTable.COL_NAME + "=?," +
-                DbHelper.ProductsTable.COL_PRICE + "=?"+
-                " WHERE " + DbHelper.ProductsTable.COL_CODE + "=?";
+                DbHelper.ProductsTable.CODE + "=?," +
+                DbHelper.ProductsTable.NAME + "=?," +
+                DbHelper.ProductsTable.PRICE + "=?"+
+                " WHERE " + DbHelper.ProductsTable.CODE + "=?";
 
         SQLiteStatement upd_stmt = _db.getWritableDatabase().compileStatement(upd_sql);
 
@@ -215,8 +214,8 @@ public class ProductRepository implements IProductRepository {
 
         Cursor crs = _db.getReadableDatabase().query(
                 DbHelper.ProductsTable.TABLENAME,
-                DbHelper.ProductsTable._COL_NAMES,
-                null, null, null, null, DbHelper.ProductsTable.COL_NAME);
+                DbHelper.ProductsTable.getColumnNames(),
+                null, null, null, null, DbHelper.ProductsTable.NAME);
 
         crs.moveToFirst();
 
@@ -238,7 +237,7 @@ public class ProductRepository implements IProductRepository {
     public ArrayList<Product> findByName(String name) throws SQLiteException {
         ArrayList<Product> products = new ArrayList<>();
 
-        String select = getSelect() + " WHERE " + DbHelper.ProductsTable.COL_NAME + " LIKE " + DatabaseUtils.sqlEscapeString("%" + name + "%") + "";
+        String select = getSelect() + " WHERE " + DbHelper.ProductsTable.NAME + " LIKE " + DatabaseUtils.sqlEscapeString("%" + name + "%") + "";
         Cursor crs = _db.getReadableDatabase().rawQuery(select, null);
 
         crs.moveToFirst();

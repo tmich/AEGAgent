@@ -1,9 +1,7 @@
 package it.aeg2000srl.aegagent.mvp;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.service.chooser.ChooserTarget;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,17 +14,24 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import it.aeg2000srl.aegagent.R;
+import it.aeg2000srl.aegagent.core.Order;
+import it.aeg2000srl.aegagent.core.OrderItem;
 
 public class OrderDetailsActivity extends AppCompatActivity implements IOrderDetailsView {
     //UI references
-    TextView lblCustomerId;
+    TextView lblCustomer;
     ListView lstItems;
     FloatingActionButton btnNewItem;
 
-    OrderDetailsPresenter _presenter;
+    long order_id;
+    long customer_id;
+
+    String customerName;
+
+    OrderDetailsPresenter presenter;
+    private Order order;
 
     static final int PICK_PRODUCT_REQUEST = 1;  // The request code
 
@@ -34,9 +39,12 @@ public class OrderDetailsActivity extends AppCompatActivity implements IOrderDet
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order_details);
-        lblCustomerId = (TextView) findViewById(R.id.lblCustomerId);
+        lblCustomer = (TextView) findViewById(R.id.lblCustomer);
         lstItems = (ListView) findViewById(R.id.lstItems);
         btnNewItem = (FloatingActionButton) findViewById(R.id.btnNewItem);
+        customerName = "";
+
+        lstItems.setAdapter(new ArrayAdapter<OrderItem>(this, android.R.layout.simple_list_item_1, new ArrayList<OrderItem>()));
     }
 
     @Override
@@ -45,9 +53,11 @@ public class OrderDetailsActivity extends AppCompatActivity implements IOrderDet
 
         Intent intent = getIntent();
         if(intent != null) {
-            long order_id = intent.getLongExtra("order_id", 0L);
-            long customer_id = intent.getLongExtra("customer_id", 0L);
-            _presenter = new OrderDetailsPresenter(order_id, customer_id, this);
+            order_id = intent.getLongExtra("order_id", 0L);
+            customer_id = intent.getLongExtra("customer_id", 0L);
+            presenter = new OrderDetailsPresenter(order_id, customer_id, this);
+        } else {
+            finish();
         }
 
         btnNewItem.setOnClickListener(new View.OnClickListener() {
@@ -69,7 +79,11 @@ public class OrderDetailsActivity extends AppCompatActivity implements IOrderDet
             if (resultCode == RESULT_OK) {
                 // The user picked a product.
                 long id = data.getLongExtra("result", 0);
-                showMessage(String.valueOf(id));
+                //showMessage(String.valueOf(id));
+                if (id > 0) {
+                    // TODO: set quantity, discount and notes
+                    presenter.addItem(id, 1, "prova");
+                }
             }
         }
     }
@@ -93,6 +107,16 @@ public class OrderDetailsActivity extends AppCompatActivity implements IOrderDet
             return true;
         }
 
+        if(id == R.id.action_save) {
+            try {
+                presenter.save();
+                showMessage("Ordine salvato");
+                finish();
+            } catch (Exception exc) {
+                showMessage(exc.toString());
+            }
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -102,8 +126,8 @@ public class OrderDetailsActivity extends AppCompatActivity implements IOrderDet
     }
 
     @Override
-    public ArrayAdapter getAdapter() {
-        return (ArrayAdapter)lstItems.getAdapter();
+    public ArrayAdapter<OrderItem> getAdapter() {
+        return (ArrayAdapter<OrderItem>) lstItems.getAdapter();
     }
 
 
@@ -114,7 +138,22 @@ public class OrderDetailsActivity extends AppCompatActivity implements IOrderDet
 
     @Override
     public void update() {
+        lblCustomer.setText(customerName);
         getAdapter().notifyDataSetChanged();
     }
 
+    @Override
+    public Order getOrder() {
+        return order;
+    }
+
+    @Override
+    public void setCustomerName(String name) {
+        customerName = name;
+    }
+
+    @Override
+    public void setOrder(Order order) {
+        this.order = order;
+    }
 }

@@ -3,5 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="it.aeg2000srl.aegagent.mvp.OrderDetailsActivity">
     <item android:id="@+id/action_settings" android:title="@string/action_settings"
-        android:orderInCategory="100" app:showAsAction="never" />
+        android:orderInCategory="100" app:showAsAction="never" android:visible="false" />
+
+    <item android:id="@+id/action_save"
+        android:title="@string/save"
+        android:icon="@android:drawable/ic_menu_save"
+        app:showAsAction="always"
+        android:orderInCategory="100"
+        />
 </menu>

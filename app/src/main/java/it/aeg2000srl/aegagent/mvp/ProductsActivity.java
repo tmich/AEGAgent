@@ -62,9 +62,13 @@ public class ProductsActivity extends AppCompatActivity implements IProductsView
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
 
-        if(getIntent().getAction().equals("CHOOSE_PRODUCT")) {
-            presenter = new ChooseProductPresenter(this);
-        } else {
+        try {
+            if (getIntent().getAction().equals("CHOOSE_PRODUCT")) {
+                presenter = new ChooseProductPresenter(this);
+            } else {
+                Toast.makeText(this, "Intent not valid", Toast.LENGTH_SHORT).show();
+            }
+        } catch (NullPointerException ne) {
             presenter = new ProductsPresenter(this);
         }
     }
@@ -137,7 +141,7 @@ public class ProductsActivity extends AppCompatActivity implements IProductsView
 
     @Override
     public void update() {
-        ((ProductsArrayAdapter) (productsList.getAdapter())).notifyDataSetChanged();
+        getAdapter().notifyDataSetChanged();
     }
 
     @Override

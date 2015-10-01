@@ -6,7 +6,6 @@ import android.content.Context;
 import java.util.Random;
 import java.util.UUID;
 
-import it.aeg2000srl.aegagent.core.Product;
 import it.aeg2000srl.aegagent.infrastructure.DbHelper;
 
 /**
@@ -26,13 +25,13 @@ public class TestDbHelper extends DbHelper {
         for (int i=0; i<5; i++) {
             ContentValues cv = new ContentValues();
             String newCode = UUID.randomUUID().toString().substring(0, 5);
-            cv.put(CustomersTable.COL_CODE, newCode);
-            cv.put(CustomersTable.COL_NAME, "Cliente di Test n. " + new Random().nextInt(5));
-            cv.put(CustomersTable.COL_ADDRESS, text);
-            cv.put(CustomersTable.COL_CAP, "00000");
-            cv.put(CustomersTable.COL_CITY, text);
-            cv.put(CustomersTable.COL_TEL, text);
-            cv.put(CustomersTable.COL_IVA, UUID.randomUUID().toString().substring(0, 11));
+            cv.put(CustomersTable.CODE, newCode);
+            cv.put(CustomersTable.NAME, "Cliente di Test n. " + new Random().nextInt(5));
+            cv.put(CustomersTable.ADDRESS, text);
+            cv.put(CustomersTable.CAP, "00000");
+            cv.put(CustomersTable.CITY, text);
+            cv.put(CustomersTable.TEL, text);
+            cv.put(CustomersTable.IVA, UUID.randomUUID().toString().substring(0, 11));
             getWritableDatabase().insert(CustomersTable.TABLENAME, null, cv);
         }
     }
@@ -41,9 +40,9 @@ public class TestDbHelper extends DbHelper {
         for (int i=0; i<5; i++) {
             ContentValues cv = new ContentValues();
             String newCode = UUID.randomUUID().toString().substring(0, 5);
-            cv.put(ProductsTable.COL_CODE, newCode);
-            cv.put(ProductsTable.COL_NAME, "Prodotto di Test n. " + new Random().nextInt(5));
-            cv.put(ProductsTable.COL_PRICE, new Random().nextDouble());
+            cv.put(ProductsTable.CODE, newCode);
+            cv.put(ProductsTable.NAME, "Prodotto di Test n. " + new Random().nextInt(5));
+            cv.put(ProductsTable.PRICE, new Random().nextDouble());
             getWritableDatabase().insert(ProductsTable.TABLENAME, null, cv);
         }
     }
