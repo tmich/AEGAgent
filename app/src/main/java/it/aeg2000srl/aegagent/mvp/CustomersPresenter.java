@@ -23,18 +23,15 @@ public class CustomersPresenter {
     //service
     CustomerService service;
 
-    // adapter
-//    CustomersArrayAdapter adapter;
-
     public CustomersPresenter(final ICustomersView view) {
         this.customersView = view;
         service = new CustomerService(this.customersView.getContext());
         customersView.setOnSelectedItem(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Customer item = customersView.getAdapter().getItem(i);
+                CustomerViewModel customerViewModel = customersView.getAdapter().getItem(i);
                 Intent detailsView = new Intent(customersView.getContext(), CustomerDetailsActivity.class);
-                detailsView.putExtra("id", item.getId());
+                detailsView.putExtra("id", customerViewModel.Id);
                 customersView.getContext().startActivity(detailsView);
             }
         });
@@ -46,24 +43,14 @@ public class CustomersPresenter {
     public void updateView()
     {
         customersView.getAdapter().clear();
-        customersView.getAdapter().addAll((List<Customer>) service.getAll());
+        customersView.getAdapter().addAll((List<CustomerViewModel>) service.getAll());
         customersView.update();
     }
 
-//    public void onItemClick(int position) {
-//        Customer item = adapter.getItem(position);
-//        //String name = item.getAsString("name");
-//        //long id = item.getAsLong("id");
-//        //Log.d("tiziano", name);
-//        Intent detailsView = new Intent(customersView.getContext(), CustomerDetailsActivity.class);
-//        detailsView.putExtra("id", item.getId());
-//        //detailsView.putExtra("name", name);
-//        customersView.getContext().startActivity(detailsView);
-//    }
 
     public void onSearch(String text) {
         customersView.getAdapter().clear();
-        customersView.getAdapter().addAll((Collection<? extends Customer>) ( text.equals("") ? service.getAll() : service.findByName(text) ));
+        customersView.getAdapter().addAll((Collection<? extends CustomerViewModel>) ( text.equals("") ? service.getAll() : service.findByName(text) ));
         customersView.update();
     }
 }

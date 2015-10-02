@@ -25,7 +25,7 @@ public class OrderItemTest extends AndroidTestCase {
 
     public void testOrderItemWasCorrectlyInitialized() {
         Product p = repo.getAll().get(1);
-        OrderItem it = new OrderItem(p);
+        OrderItem it = new OrderItem(p.getId());
         assertEquals(it.getQty(), 1);
     }
 }

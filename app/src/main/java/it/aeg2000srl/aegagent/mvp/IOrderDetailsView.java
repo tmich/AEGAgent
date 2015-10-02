@@ -1,9 +1,12 @@
 package it.aeg2000srl.aegagent.mvp;
 
 import android.content.ContentValues;
+import android.content.Intent;
+import android.support.design.widget.FloatingActionButton;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 
 import java.util.ArrayList;
 
@@ -17,9 +20,8 @@ public interface IOrderDetailsView extends IView {
     ArrayAdapter getAdapter();
 
     void showMessage(String message);
-    void setOrder(Order order);
-    Order getOrder();
-
-    void setCustomerName(String name);
-//    void finish();
+    void setOrderViewModel(OrderViewModel orderViewModel);
+    OrderViewModel getOrderViewModel();
+    void setActionOnNewButton(View.OnClickListener listener);
+    void startActivityForResult(Intent intent, int requestCode);
 }

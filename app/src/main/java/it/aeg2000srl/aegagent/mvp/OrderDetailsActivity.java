@@ -16,7 +16,6 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 import it.aeg2000srl.aegagent.R;
-import it.aeg2000srl.aegagent.core.Order;
 import it.aeg2000srl.aegagent.core.OrderItem;
 
 public class OrderDetailsActivity extends AppCompatActivity implements IOrderDetailsView {
@@ -25,15 +24,11 @@ public class OrderDetailsActivity extends AppCompatActivity implements IOrderDet
     ListView lstItems;
     FloatingActionButton btnNewItem;
 
-    long order_id;
-    long customer_id;
-
-    String customerName;
+//    long order_id;
+//    long customer_id;
 
     OrderDetailsPresenter presenter;
-    private Order order;
-
-    static final int PICK_PRODUCT_REQUEST = 1;  // The request code
+    private OrderViewModel orderViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,9 +37,19 @@ public class OrderDetailsActivity extends AppCompatActivity implements IOrderDet
         lblCustomer = (TextView) findViewById(R.id.lblCustomer);
         lstItems = (ListView) findViewById(R.id.lstItems);
         btnNewItem = (FloatingActionButton) findViewById(R.id.btnNewItem);
-        customerName = "";
 
-        lstItems.setAdapter(new ArrayAdapter<OrderItem>(this, android.R.layout.simple_list_item_1, new ArrayList<OrderItem>()));
+        lstItems.setAdapter(new OrderItemArrayAdapter(this, new ArrayList<OrderItemViewModel>()));
+    }
+
+    @Override
+    public void setActionOnNewButton(View.OnClickListener listener)
+    {
+        btnNewItem.setOnClickListener(listener);
+    }
+
+    @Override
+    public void startActivityForResult(Intent intent, int requestCode) {
+        super.startActivityForResult(intent, requestCode);
     }
 
     @Override
@@ -53,39 +58,18 @@ public class OrderDetailsActivity extends AppCompatActivity implements IOrderDet
 
         Intent intent = getIntent();
         if(intent != null) {
-            order_id = intent.getLongExtra("order_id", 0L);
-            customer_id = intent.getLongExtra("customer_id", 0L);
+            long order_id = intent.getLongExtra("order_id", 0L);
+            long customer_id = intent.getLongExtra("customer_id", 0L);
             presenter = new OrderDetailsPresenter(order_id, customer_id, this);
         } else {
             finish();
         }
 
-        btnNewItem.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // apro l'activity prodotti per farmi restituire un risultato
-                Intent chooseProduct = new Intent(OrderDetailsActivity.this, ProductsActivity.class);
-                chooseProduct.setAction("CHOOSE_PRODUCT");
-                startActivityForResult(chooseProduct, PICK_PRODUCT_REQUEST);
-            }
-        });
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // Check which request we're responding to
-        if (requestCode == PICK_PRODUCT_REQUEST) {
-            // Make sure the request was successful
-            if (resultCode == RESULT_OK) {
-                // The user picked a product.
-                long id = data.getLongExtra("result", 0);
-                //showMessage(String.valueOf(id));
-                if (id > 0) {
-                    // TODO: set quantity, discount and notes
-                    presenter.addItem(id, 1, "prova");
-                }
-            }
-        }
+        presenter.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -133,27 +117,23 @@ public class OrderDetailsActivity extends AppCompatActivity implements IOrderDet
 
     @Override
     public void showMessage(String message) {
-        Toast.makeText(this, message,Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void update() {
-        lblCustomer.setText(customerName);
+        lblCustomer.setText(orderViewModel.Customer.Name);
         getAdapter().notifyDataSetChanged();
     }
 
     @Override
-    public Order getOrder() {
-        return order;
+    public OrderViewModel getOrderViewModel() {
+        return orderViewModel;
     }
 
     @Override
-    public void setCustomerName(String name) {
-        customerName = name;
-    }
-
-    @Override
-    public void setOrder(Order order) {
-        this.order = order;
+    public void setOrderViewModel(OrderViewModel orderViewModel) {
+        this.orderViewModel = orderViewModel;
+        update();
     }
 }

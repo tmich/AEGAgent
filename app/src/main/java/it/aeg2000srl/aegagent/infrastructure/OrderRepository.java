@@ -8,6 +8,8 @@ import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
 import java.util.ArrayList;
 import java.util.Date;
+
+import it.aeg2000srl.aegagent.core.Customer;
 import it.aeg2000srl.aegagent.core.IOrderRepository;
 import it.aeg2000srl.aegagent.core.Order;
 
@@ -31,7 +33,7 @@ public class OrderRepository implements IOrderRepository {
     }
 
     protected Order make(Cursor c) {
-        Order o = new Order();
+        Order o = new Order(new Customer());
         o.setId(c.getLong(0));
         o.setCustomerId(c.getLong(1));
         o.setCreationDate(new Date(c.getInt(2)));
@@ -102,7 +104,7 @@ public class OrderRepository implements IOrderRepository {
                 " VALUES (?, ?, ?, ?, ?)";
 
         SQLiteStatement stmt = _db.getWritableDatabase().compileStatement(sql);
-        stmt.bindLong(1, order.getCustomerId());
+        stmt.bindLong(1, order.getCustomer().getId());
         stmt.bindLong(2, order.getCreationDate().getTime());
         stmt.bindLong(3, order.getUserId());
         stmt.bindString(4, order.getNotes() != null ? order.getNotes() : "");
@@ -136,7 +138,7 @@ public class OrderRepository implements IOrderRepository {
 
         SQLiteStatement stmt = _db.getWritableDatabase().compileStatement(sql);
 
-        stmt.bindLong(1, order.getCustomerId());
+        stmt.bindLong(1, order.getCustomer().getId());
         stmt.bindLong(2, order.getCreationDate().getTime());
         stmt.bindLong(3, order.getUserId());
         stmt.bindString(4, order.getNotes());

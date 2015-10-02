@@ -33,7 +33,7 @@ import java.util.Collection;
 import java.util.List;
 
 import it.aeg2000srl.aegagent.R;
-import it.aeg2000srl.aegagent.core.Product;
+//import it.aeg2000srl.aegagent.core.Product;
 import it.aeg2000srl.aegagent.services.ProductService;
 
 public class ProductsActivity extends AppCompatActivity implements IProductsView, SearchView.OnQueryTextListener {
@@ -54,7 +54,7 @@ public class ProductsActivity extends AppCompatActivity implements IProductsView
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_products);
         productsList = (ListView)findViewById(R.id.productsList);
-        productsList.setAdapter(new ProductsArrayAdapter(this, new ArrayList<Product>()));
+        productsList.setAdapter(new ProductsArrayAdapter(this, new ArrayList<ProductViewModel>()));
         productsList.setEmptyView(findViewById(R.id.empty_list));
     }
 
@@ -234,7 +234,7 @@ public class ProductsActivity extends AppCompatActivity implements IProductsView
             if(exception == null) {
                 showMessage("ok: " + result);
 
-                getAdapter().addAll((Collection<? extends Product>) serv.getAll());
+                getAdapter().addAll((Collection<? extends ProductViewModel>) serv.getAll());
                 getAdapter().notifyDataSetChanged();
             } else {
                 showError(exception);

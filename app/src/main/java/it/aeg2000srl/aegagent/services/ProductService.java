@@ -3,12 +3,15 @@ package it.aeg2000srl.aegagent.services;
 import android.content.ContentValues;
 import android.content.Context;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import it.aeg2000srl.aegagent.core.Customer;
 import it.aeg2000srl.aegagent.core.IProductRepository;
 import it.aeg2000srl.aegagent.core.Product;
 import it.aeg2000srl.aegagent.infrastructure.ProductRepository;
+import it.aeg2000srl.aegagent.mvp.ProductViewModel;
+import it.aeg2000srl.aegagent.mvp.ViewModelFactory;
 
 /**
  * Created by tiziano.michelessi on 28/09/2015.
@@ -17,27 +20,41 @@ public class ProductService {
 
     IProductRepository _repo;
     Context _context;
+    ViewModelFactory viewModelFactory;
 
     public ProductService(Context context, IProductRepository repo) {
         _repo = repo;
         _context = context;
+        viewModelFactory = new ViewModelFactory(context);
     }
+
+
 
     public ProductService(Context context) {
         this(context, new ProductRepository(context));
     }
 
-    public Product getById(long id) {
-        return _repo.getById(id);
+    public ProductViewModel getById(long id) {
+        return viewModelFactory.toProductViewModel(_repo.getById(id));
     }
 
 
-    public Iterable<Product> findByName(String name) {
-        return _repo.findByName(name);
+    public Iterable<ProductViewModel> findByName(String name) {
+        ArrayList<ProductViewModel> pvms = new ArrayList<>();
+        for(Product p : _repo.findByName(name)){
+            pvms.add(viewModelFactory.toProductViewModel(p));
+        }
+        return pvms;
     }
 
-    public Iterable<Product> getAll() {
-        return _repo.getAll();
+    public Iterable<ProductViewModel> getAll() {
+        ArrayList<ProductViewModel> pvms = new ArrayList<>();
+
+        for(Product p : _repo.getAll()){
+            pvms.add(viewModelFactory.toProductViewModel(p));
+        }
+
+        return pvms;
     }
 
     public void save(ContentValues data) {

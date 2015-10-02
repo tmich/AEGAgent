@@ -11,7 +11,7 @@ import it.aeg2000srl.aegagent.core.Order;
  * Created by tiziano.michelessi on 26/09/2015.
  */
 public interface ICustomerDetailsView extends IView {
-    void setCustomerData(ContentValues data);
+    void setCustomer(CustomerViewModel customerViewModel);
 //    void setWaitingOrders(List<Order> waitingOrders);
-    ArrayAdapter<Order> getWaitingOrdersAdapter();
+    ArrayAdapter<OrderViewModel> getWaitingOrdersAdapter();
 }

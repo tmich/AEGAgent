@@ -44,15 +44,12 @@ public class CustomersActivity extends AppCompatActivity implements ICustomersVi
     // Presenter
     CustomersPresenter presenter;
 
-    // DataSet
-//    CustomersArrayAdapter adapter;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_customers);
         customersList = (ListView)findViewById(R.id.customersList);
-        customersList.setAdapter(new CustomersArrayAdapter(this, new ArrayList<Customer>()));
+        customersList.setAdapter(new CustomersArrayAdapter(this, new ArrayList<CustomerViewModel>()));
         customersList.setEmptyView(findViewById(R.id.empty_list));
     }
 
@@ -66,11 +63,6 @@ public class CustomersActivity extends AppCompatActivity implements ICustomersVi
     public void setOnSelectedItem(AdapterView.OnItemClickListener listener) {
         customersList.setOnItemClickListener(listener);
     }
-
-//    @Override
-//    public ListView getListView() {
-//        return customersList;
-//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -86,11 +78,6 @@ public class CustomersActivity extends AppCompatActivity implements ICustomersVi
 
         return super.onCreateOptionsMenu(menu);
     }
-
-//    @Override
-//    public void setAdapter(CustomersArrayAdapter adapter) {
-//        customersList.setAdapter(adapter);
-//    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -172,9 +159,9 @@ public class CustomersActivity extends AppCompatActivity implements ICustomersVi
             this.handler = handler;
         }
 
-        public List<ContentValues> getData() {
-            return data;
-        }
+//        public List<ContentValues> getData() {
+//            return data;
+//        }
 
         @Override
         protected Integer doInBackground(String... urls) {
@@ -240,7 +227,7 @@ public class CustomersActivity extends AppCompatActivity implements ICustomersVi
             if(exception == null) {
                 showMessage("ok: " + result);
 
-                getAdapter().addAll((Collection<? extends Customer>) serv.getAll());
+                getAdapter().addAll((Collection<? extends CustomerViewModel>) serv.getAll());
                 getAdapter().notifyDataSetChanged();
             } else {
                 showError(exception);

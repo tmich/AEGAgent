@@ -33,10 +33,8 @@ public class CustomerDetailsActivity extends AppCompatActivity implements ICusto
 
     // presenter
     CustomerDetailsPresenter presenter;
-    List<Order> waitingOrders;
-//    int waitingOrders = 0;
-    ContentValues customersData;
-//    ArrayAdapter<Order> waitingOrdersAdapter;
+//    List<OrderViewModel> waitingOrders;
+    CustomerViewModel customerViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +44,6 @@ public class CustomerDetailsActivity extends AppCompatActivity implements ICusto
         lblName = (TextView)findViewById(R.id.lblName);
         lblAddress = (TextView)findViewById(R.id.lblAddress);
         lblCity = (TextView)findViewById(R.id.lblCity);
-//        lblWaitingOrders = (TextView)findViewById(R.id.lblWaitingOrders);
         btnNewOrder = (Button)findViewById(R.id.btnNewOrder);
         lstWaitingOrders = (ListView)findViewById(R.id.lstWaitingOrders);
     }
@@ -55,7 +52,7 @@ public class CustomerDetailsActivity extends AppCompatActivity implements ICusto
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
 
-        lstWaitingOrders.setAdapter(new ArrayAdapter<Order>(this, android.R.layout.simple_list_item_1, new ArrayList<Order>()));
+        lstWaitingOrders.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, new ArrayList<OrderViewModel>()));
     }
 
     @Override
@@ -83,13 +80,13 @@ public class CustomerDetailsActivity extends AppCompatActivity implements ICusto
     }
 
     @Override
-    public void setCustomerData(ContentValues item) {
-        customersData = item;
+    public void setCustomer(CustomerViewModel customerViewModel) {
+        this.customerViewModel = customerViewModel;
     }
 
     @Override
-    public ArrayAdapter<Order> getWaitingOrdersAdapter() {
-        return (ArrayAdapter<Order>)lstWaitingOrders.getAdapter();
+    public ArrayAdapter<OrderViewModel> getWaitingOrdersAdapter() {
+        return (ArrayAdapter<OrderViewModel>)lstWaitingOrders.getAdapter();
     }
 
 //    @Override
@@ -126,10 +123,10 @@ public class CustomerDetailsActivity extends AppCompatActivity implements ICusto
 
     @Override
     public void update() {
-        if(customersData != null) {
-            lblName.setText(String.valueOf(customersData.getAsString("name")));
-            lblAddress.setText(String.valueOf(customersData.getAsString("address")));
-            lblCity.setText(String.valueOf(customersData.getAsString("city")));
+        if(customerViewModel != null) {
+            lblName.setText(customerViewModel.Name);
+            lblAddress.setText(customerViewModel.Address);
+            lblCity.setText(customerViewModel.City);
         }
 
         getWaitingOrdersAdapter().notifyDataSetChanged();

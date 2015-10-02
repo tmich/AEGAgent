@@ -5,24 +5,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
-
 import java.util.List;
-
 import it.aeg2000srl.aegagent.R;
-import it.aeg2000srl.aegagent.core.Customer;
-import it.aeg2000srl.aegagent.core.Product;
 
 /**
  * Created by tiziano.michelessi on 29/09/2015.
  */
-public class ProductsArrayAdapter extends ArrayAdapter<Product> {
+public class ProductsArrayAdapter extends ArrayAdapter<ProductViewModel> {
     private final Activity context;
-    private final List<Product> products;
+    private final List<ProductViewModel> products;
 
-    public ProductsArrayAdapter(Activity context, List<Product> products) {
+    public ProductsArrayAdapter(Activity context, List<ProductViewModel> products) {
         super(context, R.layout.products, products);
         this.context = context;
         this.products = products;
@@ -56,11 +50,8 @@ public class ProductsArrayAdapter extends ArrayAdapter<Product> {
             holder = (ViewHolder) rowView.getTag();
         }
 
-        holder.textView.setText(products.get(position).getName());
-        holder.idView.setText(String.valueOf(products.get(position).getId()));
-
-//        String s = products.get(position).getName();
-
+        holder.textView.setText(products.get(position).Name);
+        holder.idView.setText(String.valueOf(products.get(position).Id));
         return rowView;
     }
 }

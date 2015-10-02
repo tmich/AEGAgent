@@ -5,32 +5,28 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 import java.util.List;
 import it.aeg2000srl.aegagent.R;
 
 /**
- * Created by tiziano.michelessi on 28/09/2015.
+ * Created by tiziano.michelessi on 02/10/2015.
  */
-public class CustomersArrayAdapter extends ArrayAdapter<CustomerViewModel> {
+public class OrderItemArrayAdapter extends ArrayAdapter<OrderItemViewModel> {
     private final Activity context;
-    private final List<CustomerViewModel> customers;
+    private final List<OrderItemViewModel> items;
 
-    public CustomersArrayAdapter(Activity context, List<CustomerViewModel> customers) {
-        super(context, R.layout.customers, customers);
+    public OrderItemArrayAdapter(Activity context, List<OrderItemViewModel> items) {
+        super(context, R.layout.products, items);
         this.context = context;
-        this.customers = customers;
+        this.items = items;
     }
 
     // static to save the reference to the outer class and to avoid access to
     // any members of the containing class
     static class ViewHolder {
-        public ImageView imageView;
         public TextView textView;
-        public ImageButton ibConfirm;
-        public ImageButton ibNotNow;
+        public TextView idView;
     }
 
     @Override
@@ -45,18 +41,17 @@ public class CustomersArrayAdapter extends ArrayAdapter<CustomerViewModel> {
         View rowView = convertView;
         if (rowView == null) {
             LayoutInflater inflater = context.getLayoutInflater();
-            rowView = inflater.inflate(R.layout.customers, null, true);
+            rowView = inflater.inflate(R.layout.products, null, true);
             holder = new ViewHolder();
             holder.textView = (TextView) rowView.findViewById(R.id.txtName);
-            holder.imageView = (ImageView) rowView.findViewById(R.id.icon);
+            holder.idView = (TextView) rowView.findViewById(R.id.txtId);
             rowView.setTag(holder);
         } else {
             holder = (ViewHolder) rowView.getTag();
         }
 
-        holder.textView.setText(customers.get(position).Name);
-
+        holder.textView.setText(items.get(position).Product.Name);
+        holder.idView.setText(String.valueOf(items.get(position).Quantity));
         return rowView;
     }
 }
-

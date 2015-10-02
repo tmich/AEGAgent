@@ -4,10 +4,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.view.View;
 import android.widget.AdapterView;
+import it.aeg2000srl.aegagent.mvp.ProductViewModel;
 
 import java.util.Collection;
 
-import it.aeg2000srl.aegagent.core.Product;
+//import it.aeg2000srl.aegagent.core.Product;
 import it.aeg2000srl.aegagent.services.ProductService;
 
 /**
@@ -30,7 +31,7 @@ public class ProductsPresenter implements IProductsPresenter {
         this.productsView.setOnSelectedItem(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                productsView.showMessage(productsView.getAdapter().getItem(position).getName());
+                productsView.showMessage(productsView.getAdapter().getItem(position).Name);
             }
         });
 
@@ -40,14 +41,14 @@ public class ProductsPresenter implements IProductsPresenter {
     protected void updateView()
     {
         productsView.getAdapter().clear();
-        productsView.getAdapter().addAll((Collection<? extends Product>) service.getAll());
+        productsView.getAdapter().addAll((Collection<? extends ProductViewModel>) service.getAll());
         productsView.update();
     }
 
     @Override
     public void onSearch(String text) {
         productsView.getAdapter().clear();
-        productsView.getAdapter().addAll((Collection<? extends Product>) ( text.equals("") ? service.getAll() : service.findByName(text) ));
+        productsView.getAdapter().addAll((Collection<? extends ProductViewModel>) ( text.equals("") ? service.getAll() : service.findByName(text) ));
         productsView.update();
     }
 }

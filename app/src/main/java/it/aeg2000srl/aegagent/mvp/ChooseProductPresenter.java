@@ -29,9 +29,9 @@ public class ChooseProductPresenter implements IProductsPresenter {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 //                ProductsArrayAdapter.ViewHolder holder = (ProductsArrayAdapter.ViewHolder)view.getTag(); //productsView.getAdapter().getView(position,view,parent).getTag();
 //                long result = Long.parseLong(holder.idView.getText().toString());
-                Product product = productsView.getAdapter().getItem(position);
+                ProductViewModel productViewModel = productsView.getAdapter().getItem(position);
                 Intent returnIntent = new Intent();
-                returnIntent.putExtra("result", product.getId());
+                returnIntent.putExtra("result", productViewModel.Id);
                 ((Activity)productsView).setResult(Activity.RESULT_OK, returnIntent);
                 ((Activity)productsView).finish();
             }
@@ -43,14 +43,14 @@ public class ChooseProductPresenter implements IProductsPresenter {
     protected void updateView()
     {
         productsView.getAdapter().clear();
-        productsView.getAdapter().addAll((Collection<? extends Product>) service.getAll());
+        productsView.getAdapter().addAll((Collection<? extends ProductViewModel>) service.getAll());
         productsView.update();
     }
 
     @Override
     public void onSearch(String text) {
         productsView.getAdapter().clear();
-        productsView.getAdapter().addAll((Collection<? extends Product>) ( text.equals("") ? service.getAll() : service.findByName(text) ));
+        productsView.getAdapter().addAll((Collection<? extends ProductViewModel>) ( text.equals("") ? service.getAll() : service.findByName(text) ));
         productsView.update();
     }
 }

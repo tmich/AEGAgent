@@ -17,7 +17,7 @@ public class Order {
     protected List<OrderItem> items;
     protected Date sentDate;
 
-    public Order() {
+    protected Order() {
         setCreationDate(new Date());
         items = new ArrayList<>();
     }
@@ -65,7 +65,7 @@ public class Order {
 
     public void setCustomer(Customer customer) {
         this.customer = customer;
-        this.customer_id = customer.getId();
+        //this.customer_id = customer.getId();
     }
 
     public List<OrderItem> getItems() {
@@ -89,7 +89,7 @@ public class Order {
     }
 
     public long getCustomerId() {
-        return customer_id;
+        return customer.getId();
     }
 
     public void setCustomerId(long customer_id) {
